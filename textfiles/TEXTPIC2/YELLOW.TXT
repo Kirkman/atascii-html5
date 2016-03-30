@@ -1,0 +1,1 @@
+MENU›1›D1:FIRST.TXT››  You decide that the Yellow button is›the way to go. You press it, but it ›does nothing. You keep pressing it,›but nothing happens, save one, 70 ›Klangon guards rush into the room and›shoot you on the spot, sorry pal, you›be dead as a doornail!!››        0> Quit.›        1> Try Again.›
