@@ -29,17 +29,17 @@
 			position: absolute;
 		}
 		#canvas-overlay {
-			background-image: url('http://www.joshrenaud.com/experiments/atascii-html5/grid-overlay.png');
+			background-image: url('http://www.joshrenaud.com/experiments/atascii-html5/diagnostics/grid-overlay.png');
 		}
 		#x-axis {
-			background-image: url('http://www.joshrenaud.com/experiments/atascii-html5/x-axis.png');
+			background-image: url('http://www.joshrenaud.com/experiments/atascii-html5/diagnostics/x-axis.png');
 			top: -16px;
 			left: 0px;
 			width: 640px;
 			height: 16px;
 		}
 		#y-axis {
-			background-image: url('http://www.joshrenaud.com/experiments/atascii-html5/y-axis.png');
+			background-image: url('http://www.joshrenaud.com/experiments/atascii-html5/diagnostics/y-axis.png');
 			top: 0px;
 			left: -16px;
 			width: 16px;
@@ -92,7 +92,7 @@
 		<div id="canvas-overlay" class="diagnostic"></div>
 		<div id="x-axis" class="diagnostic"></div>
 		<div id="y-axis" class="diagnostic"></div>
-		<audio id="buzzer" src="http://www.joshrenaud.com/experiments/atascii-html5/buzzer.mp3" preload="auto"></audio>
+		<audio id="buzzer" src="http://www.joshrenaud.com/experiments/atascii-html5/sound/buzzer.mp3" preload="auto"></audio>
 	</div>
 	</section>
 	<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
@@ -527,7 +527,42 @@
  						}
 					}
 					// Tab 
+					// Default value of 8?
+					// Looks like tab always moves to a tab stop, not a set # of characters.
 					else if (charCode == 127) {
+						// Formula to find next tab stop:
+						// Add 1 to x, to make it 1-indexed
+						// Divide x by tabwidth (8 spaces here)
+						// Discard remainder (convert to Int)
+						// Add 1
+						// Multiply by 8.
+						// Subtract 1 (to convert back to 0-index style)
+						// Only apply this formula if we're not in the last tab stop range
+						if (cursor.x < (screen.width - 9)) {
+							var nextStop = (parseInt((cursor.x+1)/8) + 1) * 8 - 1;
+							cursor.x = nextStop;
+						}
+						// If we're in the last tab stop range, move to last character position
+						else if (cursor.x < (screen.width - 2)) {
+							cursor.x = screen.width - 1;
+						}
+						// If we're in the 40th column, then treat like an EOL
+						else {
+							// Move cursor to start of next line
+							cursor.x = 0;
+							// If we're anywhere but the bottom,
+							// simply move to the next row
+							if ( cursor.y < screen.height - 1) {
+								cursor.y++;
+							}
+							// If we're at the bottom of the screen,
+							// then shift the contents of the screen up 1 row
+							else {
+								screen.scrollUp(1);
+							}
+						}
+
+
 						//  CODE COMING SOON
 					}
 					// Return / EOL
