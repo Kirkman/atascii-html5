@@ -2,26 +2,64 @@
 <meta charset="UTF-8">
 <html>
 <head>
-	<title>ATASCII animation viewer - HTML5</title>
+	<title>Atascii Tube - animation viewer</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
 	<style>
+		@font-face {
+		  font-family: 'AtariClassicChunky';
+		  src: url('fontsets/AtariClassicChunky.eot?#iefix') format('fontsets/embedded-opentype'),  url('fontsets/AtariClassicChunky.woff') format('woff'), url('fontsets/AtariClassicChunky.ttf')  format('truetype'), url('fontsets/AtariClassicChunky.svg#AtariClassicChunky') format('svg');
+		  font-weight: normal;
+		  font-style: normal;
+		}
+
 		body {
+			font-family: 'AtariClassicChunky', sans-serif;
 			width: 100%;
 			margin: 0px;
 			padding: 0px;
+			background-color: #0e0e11;
+			color: #7db6de;
+			text-align: center;
 		}
+		h1 {
+			font-size: 36px;
+			padding: 0px 15px;
+		}
+		h3 {
+			font-size: 18px;
+			padding: 0px 15px;
+		}
+		p,li {
+			font-size: 14px;
+			padding: 0px 15px;
+			color: #005d8e;
+		}
+		li {
+			margin-bottom: 12px;
+		}
+
 		#fileSelector {
 			display: none;
+			margin: 0px auto;
 		}
 		section {
-			margin: 0px 25px;
+			margin: 0px auto;
+		}
+		section#background-info {
+			text-align: left;
+			width: 80%;
 		}
 		#canvas-container {
-			margin-top: 32px;
-			margin-bottom: 32px;
+			margin: 32px auto;
 			position: relative;
-			min-width: 640px;
-			min-height: 384px;
+			width: 640px;
+			height: 384px;
 		}
+
+		#canvas-container.fullscreen {
+		}
+
 		#canvas-container canvas, 
 		#canvas-overlay,
 		#x-axis,
@@ -47,6 +85,8 @@
 		}
 		#canvas-container canvas {
 			z-index: -1;
+			top: 0;
+			left: 0;
 		}
 		.diagnostic {
 			display: none;
@@ -56,9 +96,9 @@
 	<!--<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>-->
 </head>
 <body>
-	<section>
-	<h1>Watch ATASCII animations</h1>
-	<p>This is an experimental ATASCII animation viewer,  which uses the HTML5 canvas element. There are still rendering errors, so the code remains very much in-progress.</p>
+	<section id="main">
+	<h1>AtasciiTube</h1>
+	<p>This is an experimental ATASCII animation viewer which uses the HTML5 	&lt;canvas&gt; element and Javascript.</p>
 
 	<!--
 	<h3>Upload an ATASCII animation</h3>
@@ -79,13 +119,48 @@
 		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/pirates.mvi">pirates.mvi</option>
 		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/starwrek.mes">starwrek.mes</option>
 		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/starwrek2.mes">starwrek2.mes</option>
-		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/starwrek3-debug.mes">starwrek3-DEBUG.mes</option>
 		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/starwrek3.mes">starwrek3.mes</option>
 		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/starwrek3b.mes">starwrek3b.mes</option>
 		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/wheel.mes">wheel.mes</option>
+
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/newyear_atascii/newyear1.ata">newyear1.ata</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/newyear_atascii/newyear2.ata">newyear2.ata</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/newyear_atascii/newyear3.ata">newyear3.ata</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/newyear_atascii/newyear4.ata">newyear4.ata</option>
+
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/ASCII.CTN">ASCII.CTN</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/BRUCE.OAS">BRUCE.OAS</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/BRUCELEE.CTN">BRUCELEE.CTN</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/CARTOON.MNU">CARTOON.MNU</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/COMMANDO.CTN">COMMANDO.CTN</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/CREATURE.CTN">CREATURE.CTN</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/CREATURE.OAS">CREATURE.OAS</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/INDY.OAS">INDY.OAS</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/JETSONS.CTN">JETSONS.CTN</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/KNIGHT.CTN">KNIGHT.CTN</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/NINJA.MNU">NINJA.MNU</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/NINJA1.HBO">NINJA1.HBO</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/NINJA2.HBO">NINJA2.HBO</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/NINJA3.HBO">NINJA3.HBO</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/NINJA4.HBO">NINJA4.HBO</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/NINJA5.HBO">NINJA5.HBO</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/OOPS.CTN">OOPS.CTN</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/PIRATES.CTN">PIRATES.CTN</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/RODGERS.OAS">RODGERS.OAS</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/TNT.OAS">TNT.OAS</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/TOILET.CTN">TOILET.CTN</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/TOONS2.MNU">TOONS2.MNU</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/TREK1.OAS">TREK1.OAS</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/TREK2.OAS">TREK2.OAS</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/TRUTH.OAS">TRUTH.OAS</option>
+		<option value="http://www.joshrenaud.com/experiments/atascii-html5/textfiles/TOONS/WRESTLIN.CTN">WRESTLIN.CTN</option>
+
 	</select>
 
-	<br/><input type="checkbox" id="diagnostic" name="diagnostic" value="true"> Diagnostic mode
+	<br/><input type="checkbox" id="full-screen" name="full-screen" value="true">
+	<label for="full-screen"> Full-screen mode</label>
+	<br/><input type="checkbox" id="diagnostic" name="diagnostic" value="true">
+	<label for="diagnostic"> Diagnostic mode</label>
 
 	<div id="canvas-container">
 		<canvas id="atascii" class="container"></canvas>
@@ -95,6 +170,25 @@
 		<audio id="buzzer" src="http://www.joshrenaud.com/experiments/atascii-html5/sound/buzzer.mp3" preload="auto"></audio>
 	</div>
 	</section>
+
+	<section id="background-info">
+	<h3>What is ATASCII?</h3>
+	<p>'ATASCII' means 'Atari ASCII.' It was a character set specific to Atari's 8-bit line of computers.</p>
+	<p>The ATASCII character set contained English alphanumeric characters, plus other shapes and symbols. People would arrange these symbols on the screen to make illustrations and art.</p>
+	<p>It was also possible to create rudimentary animations by using terminal commands to move the cursor around the screen. These animations could then be saved as text files and played back later.</p>
+	<p>Here are a few places to learn more about ATASCII and ATASCII animations:</p>
+	<ul>
+		<li>The <a href="https://web.archive.org/web/20010210232933/http://www.flash.net/~ambrosia/home2.htm">Break Movie Warehouse</a>, as archived by the Wayback Machine</li>
+		<li>Examples of animations at <a href="http://breakintochat.com/blog/2014/05/07/atascii-animations/">Break Into Chat</a></li>
+		<li><a href="http://www.atarimagazines.com/v4n4/toons.html">"Atari Toons"</a> article from 1985 issue of ANTIC</li>
+		<li><a href="https://en.wikipedia.org/wiki/ATASCII">ATASCII article</a> at wikipedia.org</li>
+		<li><a href="http://justsolve.archiveteam.org/wiki/ATASCII">ATASCII article</a> at Just Solve the File Format Problem</li>
+		<li><a href="http://www.atariarchives.org/mapping/appendix10.php">"Mapping the Atari"</a>, appendix 10</li>
+		<li><a href="http://joyfulcoder.net/atari/atascii/">ATASCII table</a> at joyfulcoder.net</li>
+	</ul>
+	</section>
+	
+
 	<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
 	<script>
@@ -118,6 +212,7 @@
 		var masterIndex = 0;
 		var masterStream;
 		var diagnosticMode = false;
+		var fullScreenMode = false;
 
 		//resize(canvas);
 		document.getElementById('atascii').style.background = '#005d8e';
@@ -150,7 +245,9 @@
 		}
 		
 		document.getElementById('diagnostic').onclick = function() {
-			diagnosticMode = !diagnosticMode;
+			if (this.checked) { diagnosticMode = true; }
+			else { diagnosticMode = false; }
+
 			var diags = document.getElementsByClassName("diagnostic");
 			for (var i=0; i < diags.length; i++) {
 				if ( diagnosticMode ) {
@@ -161,6 +258,61 @@
 				}
 			}
 		}
+
+		document.getElementById('full-screen').onclick = function() {
+			if (this.checked) { fullScreenMode = true; }
+			else { fullScreenMode = false; }
+
+			var container = document.getElementById('canvas-container');
+			if ( fullScreenMode ) {
+				resize(container);
+				container.classList.add('fullscreen');
+				if ( container.webkitRequestFullscreen ) {
+					container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+				    document.addEventListener('webkitfullscreenchange', exitHandler, false);
+				}
+				else if ( container.mozRequestFullScreen ) {
+					container.mozRequestFullScreen();
+				    document.addEventListener('mozfullscreenchange', exitHandler, false);
+				}
+				else if ( container.msRequestFullscreen ) {
+					container.msRequestFullscreen();
+				    document.addEventListener('MSFullscreenChange', exitHandler, false);
+				}
+				else if ( container.requestFullscreen ) {
+					container.requestFullscreen();
+				    document.addEventListener('fullscreenchange', exitHandler, false);
+				}
+			}
+			else {
+
+				if ( document.webkitExitFullscreen ) {
+					document.webkitExitFullscreen();
+				}
+				else if ( document.mozCancelFullScreen ) {
+					document.mozCancelFullScreen();
+				}
+				else if ( document.msExitFullscreen ) {
+					document.msExitFullscreen();
+				}
+				else if ( document.exitFullscreen ) {
+					document.exitFullscreen();
+				}
+				container.setAttribute('style', '-ms-transform: scale(1,1); -webkit-transform: scale3d(1,1,1); -moz-transform: scale(1,1); -o-transform: scale(1,1); transform: scale(1,1);');
+				container.classList.remove('fullscreen');
+			}
+		}
+
+		function exitHandler() {
+			var state = document.webkitIsFullScreen || document.mozFullScreen || document.msFullscreenElement;
+			var container = document.getElementById('canvas-container');
+			if ( !state ) {
+				container.setAttribute('style', '-ms-transform-origin: left top; -webkit-transform-origin: left top; -moz-transform-origin: left top; -o-transform-origin: left top; transform-origin: left top; -ms-transform: scale(1,1); -webkit-transform: scale3d(1,1,1); -moz-transform: scale(1,1); -o-transform: scale(1,1); transform: scale(1,1);');
+				container.classList.remove('fullscreen');
+				document.getElementById('full-screen').checked = false;
+			}
+		}
+
 
 		document.onkeydown = function(e) {
 			if (diagnosticMode) {
@@ -185,10 +337,16 @@
 			}
 		}
 
-		function resize(canvas) {
+		function resize(element) {
 			var scale = {x: 1, y: 1};
-			scale.x = (window.innerWidth - 50) / canvas.width;
-			scale.y = (window.innerHeight - 200) / canvas.height;
+			scale.x = (window.innerWidth) / element.offsetWidth;
+			scale.y = (window.innerHeight) / element.offsetHeight;
+// 			console.log('window.innerWidth: ' + window.innerWidth);
+// 			console.log('element.offsetWidth: ' + element.offsetWidth);
+// 			console.log('window.innerHeight: ' + window.innerHeight);
+// 			console.log('element.offsetHeight: ' + element.offsetHeight);
+// 			console.log('scale.x: ' + scale.x);
+// 			console.log('scale.y: ' + scale.y);
 
 			if (scale.x < 1 || scale.y < 1) {
 				scale = '1, 1';
@@ -197,7 +355,7 @@
 			} else {
 				scale = scale.y + ', ' + scale.y;
 			}
-			canvas.setAttribute('style', '-ms-transform-origin: left top; -webkit-transform-origin: left top; -moz-transform-origin: left top; -o-transform-origin: left top; transform-origin: left top; -ms-transform: scale(' + scale + '); -webkit-transform: scale3d(' + scale + ', 1); -moz-transform: scale(' + scale + '); -o-transform: scale(' + scale + '); transform: scale(' + scale + ');');
+			element.setAttribute('style', '-ms-transform: scale(' + scale + '); -webkit-transform: scale3d(' + scale + ', 1); -moz-transform: scale(' + scale + '); -o-transform: scale(' + scale + '); transform: scale(' + scale + ');');
 		}
 
 
@@ -225,6 +383,9 @@
  			oReq.responseType = "arraybuffer";
 			oReq.send();
 		}
+
+
+
 
 		// Function is called when file selector fires onChange 
 		function parseFile( files ) {
@@ -657,7 +818,7 @@
 				setTimeout( function(){ 
 					masterIndex = i;
 					drawChar(stream,i)
-				}, 1);
+				}, 20);
 			}
 		}
 
