@@ -349,6 +349,17 @@ Screen.prototype = {
 		}
 		this.draw();
 	},
+	isLineBlank: function( y ) {
+		var lineBlank = true;
+		// Iterate over all columns, looking for any character other than space
+		for (var x=0; x<this.width; x++) {
+			if ( this.getData( x, y ) != 32 ) {
+				lineBlank = false;
+			}
+		}
+		return lineBlank;
+	},
+
 	draw: function() {
 		context.clearRect(x,y,this.width,this.height);
 		for (var y=0; y<this.height; y++) {
@@ -496,6 +507,25 @@ function drawChar(stream,i) {
 					screen.setData( cursor.x, cursor.y, 32 );
 					screen.draw();
 				}
+				// If we're on the first column, then we need to go back to
+				// last column of previous line and erase whatever character
+				// is there. However, if the CURRENT line is blank, we also
+				// need to shift the screen up and erase the blank line before
+				// moving the cursor and doing what I just described.
+				else {
+					if ( screen.isLineBlank( cursor.y ) ) {
+						// Clear this line
+						screen.clearLine( cursor.y );
+						// Shift all rows (below this point) up 1 line 
+						screen.shiftUp( cursor.y, 1);
+					}
+					// move cursor to end of previous line
+					cursor.x = screen.width - 1;
+					cursor.y -= 1;
+					// erase character at this point
+					screen.setData( cursor.x, cursor.y, 32 );
+					screen.draw();
+				}
 			}
 			// Tab 
 			// Default value of 8?
@@ -606,9 +636,18 @@ function drawChar(stream,i) {
 			}
 			screen.setData(cursor.x, cursor.y, charCode);
 			screen.draw();
+			// If we're on the last column, typing a character is like an EOL.
+			// The character gets placed, but everything underneath gets shifted
+			// down one line. 
 			if ( cursor.x == cols-1 ) {
+				// Move cursor to beginning of line
 				cursor.x = 0;
+				// Move cursor down 1 line
 				cursor.y++;
+				// Shift all rows (below this point) down 1 line 
+				screen.shiftDown( cursor.y, 1);
+				// Clear original row
+				screen.clearLine( cursor.y );
 			}
 			else {
 				cursor.x++;
