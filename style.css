@@ -1,0 +1,85 @@
+@font-face {
+  font-family: 'AtariClassicChunky';
+  src: url('fontsets/AtariClassicChunky.eot?#iefix') format('fontsets/embedded-opentype'),  url('fontsets/AtariClassicChunky.woff') format('woff'), url('fontsets/AtariClassicChunky.ttf')  format('truetype'), url('fontsets/AtariClassicChunky.svg#AtariClassicChunky') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+	font-family: 'AtariClassicChunky', sans-serif;
+	width: 100%;
+	margin: 0px;
+	padding: 0px;
+	background-color: #0e0e11;
+	color: #7db6de;
+	text-align: center;
+}
+h1 {
+	font-size: 36px;
+	padding: 0px 15px;
+}
+h3 {
+	font-size: 18px;
+	padding: 0px 15px;
+}
+p,li {
+	font-size: 14px;
+	padding: 0px 15px;
+	color: #005d8e;
+}
+li {
+	margin-bottom: 12px;
+}
+
+#fileSelector {
+	display: none;
+	margin: 0px auto;
+}
+section {
+	margin: 0px auto;
+}
+section#background-info {
+	text-align: left;
+	width: 80%;
+}
+#canvas-container {
+	margin: 32px auto;
+	position: relative;
+	width: 640px;
+	height: 384px;
+}
+
+#canvas-container.fullscreen {
+}
+
+#canvas-container canvas, 
+#canvas-overlay,
+#x-axis,
+#y-axis {
+	position: absolute;
+}
+#canvas-overlay {
+	background-image: url('diagnostics/grid-overlay.png');
+}
+#x-axis {
+	background-image: url('diagnostics/x-axis.png');
+	top: -16px;
+	left: 0px;
+	width: 640px;
+	height: 16px;
+}
+#y-axis {
+	background-image: url('diagnostics/y-axis.png');
+	top: 0px;
+	left: -16px;
+	width: 16px;
+	height: 384px;
+}
+#canvas-container canvas {
+	z-index: -1;
+	top: 0;
+	left: 0;
+}
+.diagnostic {
+	display: none;
+}
