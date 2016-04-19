@@ -425,6 +425,7 @@ function render( stream ) {
 	// output stream length
 	if (diagnosticMode) {
 		console.log('stream.length: ' + stream.length);
+		console.log(stream);
 	}
 	// call the draw routine
 	drawChar(stream,0);
@@ -472,11 +473,17 @@ function drawChar(stream,i) {
 				if (cursor.y > 0) {
 					cursor.y -= 1;
 				}
+				else if (cursor.y == 0) {
+					cursor.y = rows-1;
+				}
 			}
 			// Move down
 			else if (charCode == 29) {
 				if (cursor.y < rows-1) {
 					cursor.y += 1;
+				}
+				else if (cursor.y == rows-1) {
+					cursor.y = 0;
 				}
 			}
 			// Move left
@@ -484,17 +491,28 @@ function drawChar(stream,i) {
 				if (cursor.x > 0) {
 					cursor.x -= 1;
 				}
+				// If cursor is at first col, then we move to the last col
+				else if (cursor.x == 0) {
+					cursor.x = cols-1;
+				}
+
 			}
 			// Move right
 			else if (charCode == 31) {
 				if (cursor.x < cols-1) {
 					cursor.x += 1;
 				}
+				// If cursor is at last col, then we move to the first col
+				else if (cursor.x == cols-1) {
+					cursor.x = 0;
+				}
 			}
 			// Clear screen and put cursor in upper left
 			else if (charCode == 125) {
 // 						console.log('CLEAR');
 				screen.clearScreen();
+				// TRUTH.OAS would seem to indicate that you DON'T change these
+				// coordinates when clearing the screen
 				cursor.x = 0;
 				cursor.y = 0;
 			}
