@@ -511,8 +511,6 @@ function drawChar(stream,i) {
 			else if (charCode == 125) {
 // 						console.log('CLEAR');
 				screen.clearScreen();
-				// TRUTH.OAS would seem to indicate that you DON'T change these
-				// coordinates when clearing the screen
 				cursor.x = 0;
 				cursor.y = 0;
 			}
