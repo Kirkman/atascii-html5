@@ -6,6 +6,12 @@ This is an experimental system for displaying Atari 8-bit ATASCII animations usi
 The system is not multiline aware yet, but at this point seems to play most animations with few glitches.
 
 
+v0.3
+---------------
+
+* Numerous emulation fixes
+* Rudimentary support for controlling playback speed
+
 v0.2
 ---------------
 

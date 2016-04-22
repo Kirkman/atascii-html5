@@ -1,5 +1,25 @@
 var canvas = document.getElementById('atascii');
 var context = canvas.getContext('2d');
+
+// 30 characters per second should emulate 300bps.
+var cps = 30;
+var msPerChar = 1000/cps;
+
+// ######### TO - DO ######### 
+// # 
+// # Need to create lastDrawTime variable.
+// # At end of main function, check current time. Compare with lastDrawTime
+// # Calculate how long to wait to call function again.
+// # Finally, set lastDrawTime, and call function.
+// # 
+// ########################### 
+
+// Date.now shim
+if (!Date.now) {
+    Date.now = function() { return new Date().getTime(); }
+}
+var lastDrawTime = null;
+
 // Atari 8-bit screen is 40x24
 var cols = 40;
 var rows = 24;
@@ -678,9 +698,20 @@ function drawChar(stream,i) {
 
 	i++;
 	if ( i < streamLen && screen.isPlaying ) {
+		var waitTime = 1;
+		if (lastDrawTime) {
+			var now = Date.now();
+			var elapsed = now - lastDrawTime;
+			var remaining = msPerChar - elapsed;
+			if (remaining > 0) {
+				waitTime = remaining;
+			}
+			console.log('now: ' + now + '\telapsed: ' + elapsed + '\tremain: ' + remaining + '\twaitTime: ' + waitTime );
+		}
+		lastDrawTime = Date.now();
 		setTimeout( function(){ 
 			masterIndex = i;
 			drawChar(stream,i)
-		}, 1);
+		}, waitTime);
 	}
 }
