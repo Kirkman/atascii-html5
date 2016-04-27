@@ -4,21 +4,22 @@ var context = canvas.getContext('2d');
 // 30 characters per second should emulate 300bps.
 var cps = 30;
 var msPerChar = 1000/cps;
+var lastFrameDrawTime = null;
+var lastDrawLoopBeginTime = null;
+var before;
 
-// ######### TO - DO ######### 
-// # 
-// # Need to create lastDrawTime variable.
-// # At end of main function, check current time. Compare with lastDrawTime
-// # Calculate how long to wait to call function again.
-// # Finally, set lastDrawTime, and call function.
-// # 
-// ########################### 
 
-// Date.now shim
-if (!Date.now) {
-    Date.now = function() { return new Date().getTime(); }
-}
-var lastDrawTime = null;
+// shim layer with setTimeout fallback
+window.requestAnimFrame = (function(){
+  return  window.requestAnimationFrame       ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame    ||
+          function( callback ){
+            window.setTimeout(callback, msPerChar);
+          };
+})();
+
+
 
 // Atari 8-bit screen is 40x24
 var cols = 40;
@@ -35,10 +36,10 @@ context.clearRect(0, 0, canvas.width, canvas.height);
 var overlay = document.getElementById('canvas-overlay');
 overlay.style.width = (cols * charW).toString() +'px';
 overlay.style.height = (rows * charH).toString() +'px';
-var masterIndex = 0;
-var masterStream;
+var stream;
 var diagnosticMode = false;
 var fullScreenMode = false;
+
 
 //resize(canvas);
 document.getElementById('atascii').style.background = '#005d8e';
@@ -149,16 +150,16 @@ document.onkeydown = function(e) {
 			img.src = imgUrl;
 		}
 	}
+	// ESC: stop
+	else if ( e.keyCode == 27 ) {
+		if (typeof screen === 'object') {
+			screen.stop();
+		}
+	}
 
 	if (diagnosticMode) {
-		// ESC: stop
-		if ( e.keyCode == 27 ) {
-			if (typeof screen === 'object') {
-				screen.stop();
-			}
-		}
 		// LEFT: step backward one frame using diagnostic
-		else if ( e.keyCode == 37 ) {
+		if ( e.keyCode == 37 ) {
 			if (typeof screen === 'object') {
 				diagnosticRender( -1 );
 			}
@@ -176,13 +177,6 @@ function resize(element) {
 	var scale = {x: 1, y: 1};
 	scale.x = (window.innerWidth) / element.offsetWidth;
 	scale.y = (window.innerHeight) / element.offsetHeight;
-// 	console.log('window.innerWidth: ' + window.innerWidth);
-// 	console.log('element.offsetWidth: ' + element.offsetWidth);
-// 	console.log('window.innerHeight: ' + window.innerHeight);
-// 	console.log('element.offsetHeight: ' + element.offsetHeight);
-// 	console.log('scale.x: ' + scale.x);
-// 	console.log('scale.y: ' + scale.y);
-
 	if (scale.x < 1 || scale.y < 1) {
 		scale = '1, 1';
 	} else if (scale.x < scale.y) {
@@ -199,19 +193,20 @@ function resize(element) {
 function loadFileFromUrl( url ) {
 	var oReq = new XMLHttpRequest();
 	oReq.onload = function(e) {
+		// Stop any animations that are playing now.
+		screen.stop();
+		// Get the data from the response.
 		var result = oReq.response;
-// 		console.log(oReq);
-// 		console.log(result);
 		// convert result ArrayBuffer to Uint8Array
 		var byteArray = new Uint8Array(result);
-		// Now convert it to normal array
-		var stream = [].slice.call(byteArray);
+		// Change Uint8Array to normal array, clone it, store it in Stream obj
+		stream = new Stream( [].slice.call(byteArray) );
 		// reset globals
 		var cursor = {'x':0,'y':0};
 		screen.initialize();
 		screen.draw();
 		// Send array to our renderer
-		render( stream );
+		requestAnimFrame( render );
 	}
 	oReq.open("GET", url);
 	oReq.setRequestHeader('Content-Type', 'application/octet-stream');
@@ -233,25 +228,43 @@ function parseFile( files ) {
 	}
 	var reader = new FileReader();
 	reader.onload = function(e) {
-// 		console.log(e);
 		var result = e.target.result;
-// 		console.log(result);
 		// convert data to ascii codes.
-		var stream = result.split('');
-		for (var i=0; i<stream.length; i++) {
-			stream[i] = stream[i].charCodeAt(0);
+		result = result.split('');
+		for (var i=0; i<result.length; i++) {
+			result[i] = result[i].charCodeAt(0);
 		}
+		stream = new Stream( result );
 		// reset globals
 		var cursor = {'x':0,'y':0};
-		var stopAnim = false;
 		screen.initialize();
 		screen.draw();
-		// send data to our renderer
-		render( stream );
+		// Send array to our renderer
+		requestAnimFrame( render );
 	};
 	reader.readAsBinaryString(file);
 }
 
+
+function Stream(data) {
+	this.data = data;
+	this.index = 0;
+}
+
+Stream.prototype = {
+	getLength: function() {
+		return this.data.length;
+	},
+	getIndex: function() {
+		return this.index;
+	},
+	getData: function() {
+		return this.data[ this.index ];
+	},
+	increment: function(amt) {
+		this.index += amt;
+	}
+}
 
 function Screen(width, height, sprite) {
 	this.width = width;
@@ -259,6 +272,8 @@ function Screen(width, height, sprite) {
 	this.sprite = sprite;
 	this.spriteWidth = sprite.width;
 	this.spriteHeight = sprite.height;
+	this.canvasWidth = this.width * this.spriteWidth;
+	this.canvasHeight = this.height * this.spriteHeight;
 	this.data = [];
 	this.prevData = [];
 	this.updates = [];
@@ -273,6 +288,7 @@ Screen.prototype = {
 		this.isPlaying = false;
 	},
 	clearScreen: function() {
+		context.clearRect(0,0,this.canvasWidth,this.canvasHeight);
 		for (var y=0; y<this.height; y++) {
 			this.data[y] = [];
 			for (var x=0; x<this.width; x++) {
@@ -282,12 +298,14 @@ Screen.prototype = {
 		}
 	},
 	initialize: function() {
-		this.play();
 		this.clearScreen();
-		// Make a copy of the screen data
-		this.prevData = this.data.map(function(arr) {
-			return arr.slice();
-		});
+		if ( this.prevData.length == 0 ) {
+			// Make a copy of the screen data
+			this.prevData = this.data.map(function(arr) {
+				return arr.slice();
+			});
+		}
+		this.play();
 	},
 	randomize: function() {
 		for (var y=0; y<this.height; y++) {
@@ -398,9 +416,10 @@ Screen.prototype = {
 		//context.clearRect(x,y,this.width,this.height);
 		for (var y=0; y<this.height; y++) {
 			for (var x=0; x<this.width; x++) {
-				// New routine: Only repaint if character changed from last paint
+				// If we're in diagnostic mode, repaint everything.
+				// Otherwise, only repaint if character changed from last paint
 				if ( this.data[y][x] && this.prevData[y][x] ) {
-					if ( this.data[y][x] != this.prevData[y][x] ) {
+					if ( this.data[y][x] != this.prevData[y][x] || diagnosticMode ) {
 						this.sprite.draw( this.data[y][x], x*this.spriteWidth, y*this.spriteHeight );
 					}
 				}
@@ -426,8 +445,7 @@ Screen.prototype = {
 			}
 			str += '\r\n';
 		}
-// 		console.log(this.data);
-// 		console.log(str);
+ 		console.log(str);
 	}
 };
 
@@ -454,178 +472,164 @@ Sprite.prototype = {
 };
 
 function diagnosticRender( direction ) {
-	// make global copies of the stream for diagnostic tools
-	masterIndex = masterIndex + direction;
+	stream.increment( direction );
+
 	// call the draw routine
-	drawChar(masterStream,masterIndex);
+	drawChar( stream.getData() );
 }
 
-function render( stream ) {
-	// make global copies of the stream for diagnostic tools
-	masterIndex = 0;
-	masterStream = stream.slice(0);
-	// output stream length
-	if (diagnosticMode) {
-		console.log('stream.length: ' + stream.length);
-		console.log(stream);
+function render( now ) {
+	// call the draw routine
+	if ( !before ) {
+		before = now;
 	}
-	// call the draw routine
-	drawChar(stream,0);
+	var delta = now - before;
+
+	// if sufficient time passed since last draw, draw next char
+	if ( delta > msPerChar ) {
+		console.log('NOW: ' + now + ' | BEFORE: ' + before + ' | ELAPSED: ' + (now-before) );
+		drawChar( stream.getData() );
+		stream.increment(1);
+ 		//before = now - (delta % msPerChar);
+ 		before = now;
+	}
+	// If stream hasn't run out, and nobody has pushed Stop,
+	// then continue requesting animation
+	if ( ( stream.getIndex() < stream.getLength() ) && screen.isPlaying) {
+		requestAnimFrame( render );
+	}
 }
 
-function drawChar(stream,i) {
-	var streamLen = stream.length;
-	if (i < streamLen ) {
-		var charCode = stream[i];
-		var msg = '';
-		if (charCode == 20) { msg = '●'; }
-		if (charCode == 27) { msg = '[esc]'; }
-		if (charCode == 28) { msg = '[up]'; }
-		if (charCode == 29) { msg = '[down]'; }
-		if (charCode == 30) { msg = '[left]'; }
-		if (charCode == 31) { msg = '[right]'; }
-		if (charCode == 125) { msg = '[clear screen]'; }
-		if (charCode == 126) { msg = '[delete]'; }
-		if (charCode == 127) { msg = '[tab]'; }
-		if (charCode == 155) { msg = '[EOL]'; }
-		if (charCode == 156) { msg = '[delete line]'; }
-		if (charCode == 157) { msg = '[insert line]'; }
-		if (charCode == 158) { msg = '[clear tab stop]'; }
-		if (charCode == 159) { msg = '[set tab stop]'; }
-		if (charCode == 253) { msg = '[buzzer]'; }
-		if (charCode == 254) { msg = '[delete char]'; }
-		if (charCode == 255) { msg = '[insert char]'; }
-		msg = ' ' + msg;
-		if ( diagnosticMode ) {
-			console.log('i:'+i,'\tx:'+cursor.x,'\ty:'+cursor.y,'\tcode:'+charCode + msg);
+function drawChar( charCode ) {
+	var msg = '';
+	if (charCode == 20) { msg = '●'; }
+	if (charCode == 27) { msg = '[esc]'; }
+	if (charCode == 28) { msg = '[up]'; }
+	if (charCode == 29) { msg = '[down]'; }
+	if (charCode == 30) { msg = '[left]'; }
+	if (charCode == 31) { msg = '[right]'; }
+	if (charCode == 125) { msg = '[clear screen]'; }
+	if (charCode == 126) { msg = '[delete]'; }
+	if (charCode == 127) { msg = '[tab]'; }
+	if (charCode == 155) { msg = '[EOL]'; }
+	if (charCode == 156) { msg = '[delete line]'; }
+	if (charCode == 157) { msg = '[insert line]'; }
+	if (charCode == 158) { msg = '[clear tab stop]'; }
+	if (charCode == 159) { msg = '[set tab stop]'; }
+	if (charCode == 253) { msg = '[buzzer]'; }
+	if (charCode == 254) { msg = '[delete char]'; }
+	if (charCode == 255) { msg = '[insert char]'; }
+	msg = ' ' + msg;
+	if ( diagnosticMode ) {
+		console.log('i:'+stream.getIndex(),'\tx:'+cursor.x,'\ty:'+cursor.y,'\tcode:'+charCode + msg);
+	}
+
+
+	// Parse the ASCII codes
+
+	// Cursor movement
+	if ( 
+		( charCode >= 28 && charCode <= 31 ) ||
+		( charCode >= 125 && charCode <= 127 ) ||
+		( charCode >= 155 && charCode <= 159 ) ||
+		( charCode >= 253 && charCode <= 255 ) 
+	) {
+		// Move up
+		if (charCode == 28) {
+			if (cursor.y > 0) {
+				cursor.y -= 1;
+			}
+			else if (cursor.y == 0) {
+				cursor.y = rows-1;
+			}
 		}
-
-
-		// Parse the ASCII codes
-
-		// Cursor movement
-		if ( 
-			( charCode >= 28 && charCode <= 31 ) ||
-			( charCode >= 125 && charCode <= 127 ) ||
-			( charCode >= 155 && charCode <= 159 ) ||
-			( charCode >= 253 && charCode <= 255 ) 
-		) {
-			// Move up
-			if (charCode == 28) {
-				if (cursor.y > 0) {
-					cursor.y -= 1;
-				}
-				else if (cursor.y == 0) {
-					cursor.y = rows-1;
-				}
+		// Move down
+		else if (charCode == 29) {
+			if (cursor.y < rows-1) {
+				cursor.y += 1;
 			}
-			// Move down
-			else if (charCode == 29) {
-				if (cursor.y < rows-1) {
-					cursor.y += 1;
-				}
-				else if (cursor.y == rows-1) {
-					cursor.y = 0;
-				}
-			}
-			// Move left
-			else if (charCode == 30) {
-				if (cursor.x > 0) {
-					cursor.x -= 1;
-				}
-				// If cursor is at first col, then we move to the last col
-				else if (cursor.x == 0) {
-					cursor.x = cols-1;
-				}
-
-			}
-			// Move right
-			else if (charCode == 31) {
-				if (cursor.x < cols-1) {
-					cursor.x += 1;
-				}
-				// If cursor is at last col, then we move to the first col
-				else if (cursor.x == cols-1) {
-					cursor.x = 0;
-				}
-			}
-			// Clear screen and put cursor in upper left
-			else if (charCode == 125) {
-// 						console.log('CLEAR');
-				screen.clearScreen();
-				cursor.x = 0;
+			else if (cursor.y == rows-1) {
 				cursor.y = 0;
 			}
-			// Backspace
-			else if (charCode == 126) {
-				if (cursor.x > 0) {
-					// move cursor back one
-					cursor.x -= 1;
-					// erase character at this point
-					screen.setData( cursor.x, cursor.y, 32 );
-					screen.draw();
-				}
-				// If we're on the first column, then we need to go back to
-				// last column of previous line and erase whatever character
-				// is there. However, if the CURRENT line is blank, we also
-				// need to shift the screen up and erase the blank line before
-				// moving the cursor and doing what I just described.
-				else {
-					if ( screen.isLineBlank( cursor.y ) ) {
-						// Clear this line
-						screen.clearLine( cursor.y );
-						// Shift all rows (below this point) up 1 line 
-						screen.shiftUp( cursor.y, 1);
-					}
-					// move cursor to end of previous line
-					cursor.x = screen.width - 1;
-					cursor.y -= 1;
-					// erase character at this point
-					screen.setData( cursor.x, cursor.y, 32 );
-					screen.draw();
-				}
+		}
+		// Move left
+		else if (charCode == 30) {
+			if (cursor.x > 0) {
+				cursor.x -= 1;
 			}
-			// Tab 
-			// Default value of 8?
-			// Looks like tab always moves to a tab stop, not a set # of characters.
-			else if (charCode == 127) {
-				// Formula to find next tab stop:
-				// Add 1 to x, to make it 1-indexed
-				// Divide x by tabwidth (8 spaces here)
-				// Discard remainder (convert to Int)
-				// Add 1
-				// Multiply by 8.
-				// Subtract 1 (to convert back to 0-index style)
-				// Only apply this formula if we're not in the last tab stop range
-				if (cursor.x < (screen.width - 9)) {
-					var nextStop = (parseInt((cursor.x+1)/8) + 1) * 8 - 1;
-					cursor.x = nextStop;
-				}
-				// If we're in the last tab stop range, move to last character position
-				else if (cursor.x < (screen.width - 2)) {
-					cursor.x = screen.width - 1;
-				}
-				// If we're in the 40th column, then treat like an EOL
-				else {
-					// Move cursor to start of next line
-					cursor.x = 0;
-					// If we're anywhere but the bottom,
-					// simply move to the next row
-					if ( cursor.y < screen.height - 1) {
-						cursor.y++;
-					}
-					// If we're at the bottom of the screen,
-					// then shift the contents of the screen up 1 row
-					else {
-						screen.scrollUp(1);
-					}
-				}
-
-
-				//  CODE COMING SOON
+			// If cursor is at first col, then we move to the last col
+			else if (cursor.x == 0) {
+				cursor.x = cols-1;
 			}
-			// Return / EOL
-			else if (charCode == 155) {
+
+		}
+		// Move right
+		else if (charCode == 31) {
+			if (cursor.x < cols-1) {
+				cursor.x += 1;
+			}
+			// If cursor is at last col, then we move to the first col
+			else if (cursor.x == cols-1) {
+				cursor.x = 0;
+			}
+		}
+		// Clear screen and put cursor in upper left
+		else if (charCode == 125) {
+			screen.clearScreen();
+			cursor.x = 0;
+			cursor.y = 0;
+		}
+		// Backspace
+		else if (charCode == 126) {
+			if (cursor.x > 0) {
+				// move cursor back one
+				cursor.x -= 1;
+				// erase character at this point
+				screen.setData( cursor.x, cursor.y, 32 );
+				screen.draw();
+			}
+			// If we're on the first column, then we need to go back to
+			// last column of previous line and erase whatever character
+			// is there. However, if the CURRENT line is blank, we also
+			// need to shift the screen up and erase the blank line before
+			// moving the cursor and doing what I just described.
+			else {
+				if ( screen.isLineBlank( cursor.y ) ) {
+					// Clear this line
+					screen.clearLine( cursor.y );
+					// Shift all rows (below this point) up 1 line 
+					screen.shiftUp( cursor.y, 1);
+				}
+				// move cursor to end of previous line
+				cursor.x = screen.width - 1;
+				cursor.y -= 1;
+				// erase character at this point
+				screen.setData( cursor.x, cursor.y, 32 );
+				screen.draw();
+			}
+		}
+		// Tab 
+		// Default value of 8?
+		// Looks like tab always moves to a tab stop, not a set # of characters.
+		else if (charCode == 127) {
+			// Formula to find next tab stop:
+			// Add 1 to x, to make it 1-indexed
+			// Divide x by tabwidth (8 spaces here)
+			// Discard remainder (convert to Int)
+			// Add 1
+			// Multiply by 8.
+			// Subtract 1 (to convert back to 0-index style)
+			// Only apply this formula if we're not in the last tab stop range
+			if (cursor.x < (screen.width - 9)) {
+				var nextStop = (parseInt((cursor.x+1)/8) + 1) * 8 - 1;
+				cursor.x = nextStop;
+			}
+			// If we're in the last tab stop range, move to last character position
+			else if (cursor.x < (screen.width - 2)) {
+				cursor.x = screen.width - 1;
+			}
+			// If we're in the 40th column, then treat like an EOL
+			else {
 				// Move cursor to start of next line
 				cursor.x = 0;
 				// If we're anywhere but the bottom,
@@ -639,101 +643,100 @@ function drawChar(stream,i) {
 					screen.scrollUp(1);
 				}
 			}
-			// Delete Line
-			// Seems like this command might actually delete up to 
-			// three consecutive lines on screen, if user has typed
-			// without hitting 'return'
-			else if (charCode == 156) {
-				// Clear this line
-				screen.clearLine( cursor.y );
-				// Move to beginning of line
-				cursor.x = 0;
-				// Shift all rows (below this point) up 1 line 
-				screen.shiftUp( cursor.y, 1);
-				// Need to add complexity to handle consecutive lines
-			}
-			// Insert Line
-			else if (charCode == 157) {
-				// Move cursor to beginning of line
-				cursor.x = 0;
-				// Shift all rows (below this point) down 1 line 
-				screen.shiftDown( cursor.y, 1);
-				// Clear original line
-				screen.clearLine( cursor.y );
-				// Need to add complexity to handle consecutive lines
-			}
-			// Buzzer
-			else if (charCode == 253) {
-				var buzzer = document.getElementById('buzzer');
-				buzzer.play();
-			}
-			// Delete character
-			// This command is also multi-line aware.
-			else if (charCode == 254) {
-				// Shift everything after cursor one char to the left
-				screen.shiftLeft( cursor.x, cursor.y, 1);
-				// Need to add complexity to handle consecutive lines
-			}
-			// Insert character
-			// This command is also multi-line aware.
-			else if (charCode == 255) {
-				// Shift everything after cursor one char to the right
-				screen.shiftRight( cursor.x, cursor.y, 1);
-				// Need to add complexity to handle consecutive lines
-			}
-		}
 
-		// Character rendering
-		else {
-			// ATASCII uses escape to indicate that the next byte
-			// is a character to be rendered, not a command to execute.
-			// So simply increment the index and continue rendering.
-			if ( charCode == 27) {
-				i++;
-				charCode = stream[i];
-			}
-			screen.setData(cursor.x, cursor.y, charCode);
-			screen.draw();
-			// If we're on the last column, typing a character is like an EOL.
-			// The character gets placed, but everything underneath gets shifted
-			// down one line. 
-			if ( cursor.x == cols-1 ) {
-				// Move cursor to beginning of line
-				cursor.x = 0;
-				// Move cursor down 1 line
+
+			//  CODE COMING SOON
+		}
+		// Return / EOL
+		else if (charCode == 155) {
+			// Move cursor to start of next line
+			cursor.x = 0;
+			// If we're anywhere but the bottom,
+			// simply move to the next row
+			if ( cursor.y < screen.height - 1) {
 				cursor.y++;
-				// Shift all rows (below this point) down 1 line 
-				screen.shiftDown( cursor.y, 1);
-				// Clear original row
-				screen.clearLine( cursor.y );
 			}
+			// If we're at the bottom of the screen,
+			// then shift the contents of the screen up 1 row
 			else {
-				cursor.x++;
+				screen.scrollUp(1);
 			}
 		}
-		
-		if ( diagnosticMode ) {
-			screen.drawCursor(cursor.x,cursor.y);
+		// Delete Line
+		// Seems like this command might actually delete up to 
+		// three consecutive lines on screen, if user has typed
+		// without hitting 'return'
+		else if (charCode == 156) {
+			// Clear this line
+			screen.clearLine( cursor.y );
+			// Move to beginning of line
+			cursor.x = 0;
+			// Shift all rows (below this point) up 1 line 
+			screen.shiftUp( cursor.y, 1);
+			// Need to add complexity to handle consecutive lines
 		}
-
+		// Insert Line
+		else if (charCode == 157) {
+			// Move cursor to beginning of line
+			cursor.x = 0;
+			// Shift all rows (below this point) down 1 line 
+			screen.shiftDown( cursor.y, 1);
+			// Clear original line
+			screen.clearLine( cursor.y );
+			// Need to add complexity to handle consecutive lines
+		}
+		// Buzzer
+		else if (charCode == 253) {
+			var buzzer = document.getElementById('buzzer');
+			buzzer.play();
+		}
+		// Delete character
+		// This command is also multi-line aware.
+		else if (charCode == 254) {
+			// Shift everything after cursor one char to the left
+			screen.shiftLeft( cursor.x, cursor.y, 1);
+			// Need to add complexity to handle consecutive lines
+		}
+		// Insert character
+		// This command is also multi-line aware.
+		else if (charCode == 255) {
+			// Shift everything after cursor one char to the right
+			screen.shiftRight( cursor.x, cursor.y, 1);
+			// Need to add complexity to handle consecutive lines
+		}
 	}
 
-	i++;
-	if ( i < streamLen && screen.isPlaying ) {
-		var waitTime = 1;
-		if (lastDrawTime) {
-			var now = Date.now();
-			var elapsed = now - lastDrawTime;
-			var remaining = msPerChar - elapsed;
-			if (remaining > 0) {
-				waitTime = remaining;
-			}
-			console.log('now: ' + now + '\telapsed: ' + elapsed + '\tremain: ' + remaining + '\twaitTime: ' + waitTime );
+	// Character rendering
+	else {
+		// ATASCII uses escape to indicate that the next byte
+		// is a character to be rendered, not a command to execute.
+		// So simply increment the index and continue rendering.
+		if ( charCode == 27) {
+			stream.increment(1);
+			charCode = stream.getData();
 		}
-		lastDrawTime = Date.now();
-		setTimeout( function(){ 
-			masterIndex = i;
-			drawChar(stream,i)
-		}, waitTime);
+		screen.setData(cursor.x, cursor.y, charCode);
+		screen.draw();
+		// If we're on the last column, typing a character is like an EOL.
+		// The character gets placed, but everything underneath gets shifted
+		// down one line. 
+		if ( cursor.x == cols-1 ) {
+			// Move cursor to beginning of line
+			cursor.x = 0;
+			// Move cursor down 1 line
+			cursor.y++;
+			// Shift all rows (below this point) down 1 line 
+			screen.shiftDown( cursor.y, 1);
+			// Clear original row
+			screen.clearLine( cursor.y );
+		}
+		else {
+			cursor.x++;
+		}
 	}
+	
+	if ( diagnosticMode ) {
+		screen.drawCursor(cursor.x,cursor.y);
+	}
+
 }
