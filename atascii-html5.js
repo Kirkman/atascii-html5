@@ -260,6 +260,7 @@ function Screen(width, height, sprite) {
 	this.spriteWidth = sprite.width;
 	this.spriteHeight = sprite.height;
 	this.data = [];
+	this.prevData = [];
 	this.updates = [];
 	this.isPlaying = false;
 }
@@ -283,6 +284,10 @@ Screen.prototype = {
 	initialize: function() {
 		this.play();
 		this.clearScreen();
+		// Make a copy of the screen data
+		this.prevData = this.data.map(function(arr) {
+			return arr.slice();
+		});
 	},
 	randomize: function() {
 		for (var y=0; y<this.height; y++) {
@@ -390,14 +395,22 @@ Screen.prototype = {
 	},
 
 	draw: function() {
-		context.clearRect(x,y,this.width,this.height);
+		//context.clearRect(x,y,this.width,this.height);
 		for (var y=0; y<this.height; y++) {
 			for (var x=0; x<this.width; x++) {
-				if (this.data[y][x]) {
-					this.sprite.draw( this.data[y][x], x*this.spriteWidth, y*this.spriteHeight );
+				// New routine: Only repaint if character changed from last paint
+				if ( this.data[y][x] && this.prevData[y][x] ) {
+					if ( this.data[y][x] != this.prevData[y][x] ) {
+						this.sprite.draw( this.data[y][x], x*this.spriteWidth, y*this.spriteHeight );
+					}
 				}
 			}
 		}
+		// Make a copy of the screen data after drawing
+		this.prevData = this.data.map(function(arr) {
+			return arr.slice();
+		});
+
 	},
 	drawCursor: function(x,y) {
 		thisX = x*this.spriteWidth;
