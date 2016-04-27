@@ -141,6 +141,15 @@ function exitHandler() {
 
 
 document.onkeydown = function(e) {
+	// P: "Print screen" (create IMG element for saving screen caps)_
+	if ( e.keyCode == 80 ) {
+		if (typeof screen === 'object') {
+			var imgUrl = canvas.toDataURL("image/png");
+			var img = document.getElementById('capture');
+			img.src = imgUrl;
+		}
+	}
+
 	if (diagnosticMode) {
 		// ESC: stop
 		if ( e.keyCode == 27 ) {
