@@ -3,9 +3,8 @@ var context = canvas.getContext('2d');
 
 // 30 characters per second should emulate 300bps.
 var cps = 30;
-var msPerChar = 1000/cps;
-var lastFrameDrawTime = null;
-var lastDrawLoopBeginTime = null;
+var chunks = 4;
+var delay = 1000/(cps/chunks);
 var before;
 
 
@@ -15,7 +14,7 @@ window.requestAnimFrame = (function(){
           window.webkitRequestAnimationFrame ||
           window.mozRequestAnimationFrame    ||
           function( callback ){
-            window.setTimeout(callback, msPerChar);
+            window.setTimeout(callback, delay);
           };
 })();
 
@@ -486,11 +485,15 @@ function render( now ) {
 	var delta = now - before;
 
 	// if sufficient time passed since last draw, draw next char
-	if ( delta > msPerChar ) {
-		console.log('NOW: ' + now + ' | BEFORE: ' + before + ' | ELAPSED: ' + (now-before) );
-		drawChar( stream.getData() );
-		stream.increment(1);
- 		//before = now - (delta % msPerChar);
+	if ( delta > delay ) {
+		//console.log('NOW: ' + now + ' | BEFORE: ' + before + ' | ELAPSED: ' + (now-before) );
+		for (var i=0; i<chunks; i++) {
+			if ( stream.getIndex() < stream.getLength() ) {
+				drawChar( stream.getData() );
+				stream.increment(1);
+			}
+		}
+ 		//before = now - (delta % delay);
  		before = now;
 	}
 	// If stream hasn't run out, and nobody has pushed Stop,
