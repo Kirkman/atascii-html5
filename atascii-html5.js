@@ -3,7 +3,7 @@ var context = canvas.getContext('2d');
 
 // 30 characters per second should emulate 300bps.
 var cps = 30;
-var chunks = 4;
+var chunks = 1;
 var delay = 1000/(cps/chunks);
 var before;
 
@@ -69,6 +69,48 @@ document.getElementById('fileSelector').onchange = function() {
 	}
 	loadFileFromUrl( value );
 }
+
+document.getElementById('speed').onchange = function() {
+	var elem = (typeof this.selectedIndex === "undefined" ? window.event.srcElement : this);
+	var value = elem.value || elem.options[elem.selectedIndex].value;
+
+	switch ( parseInt(value) ) {
+		default:
+			cps = 30;
+			chunks = 1;
+			break;
+		case 600:
+			cps = 60;
+			chunks = 1;
+			break;
+		case 1200:
+			cps = 60;
+			chunks = 2;
+			break;
+		case 2400:
+			cps = 120;
+			chunks = 2;
+			break;
+		case 4800:
+			cps = 160;
+			chunks = 3;
+			break;
+		case 9600:
+			cps = 240;
+			chunks = 4;
+			break;
+		case 14400:
+			cps = 288;
+			chunks = 5;
+			break;
+	}
+	delay = 1000/(cps/chunks);
+
+	console.log('speed:\t' + value + 'cps:\t' + cps + 'chunks:\t' + chunks + 'delay:\t' + delay);
+
+}
+
+
 
 document.getElementById('diagnostic').onclick = function() {
 	if (this.checked) { diagnosticMode = true; }
