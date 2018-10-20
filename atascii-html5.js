@@ -41,7 +41,7 @@ var fullScreenMode = false;
 
 
 //resize(canvas);
-document.getElementById('atascii').style.background = '#005d8e';
+// document.getElementById('atascii').style.background = '#005d8e';
 
 // Globals
 var screen;
@@ -106,7 +106,7 @@ document.getElementById('speed').onchange = function() {
 	}
 	delay = 1000/(cps/chunks);
 
-	console.log('speed:\t' + value + 'cps:\t' + cps + 'chunks:\t' + chunks + 'delay:\t' + delay);
+	//console.log('speed:\t' + value + 'cps:\t' + cps + 'chunks:\t' + chunks + 'delay:\t' + delay);
 
 }
 
@@ -191,6 +191,19 @@ document.onkeydown = function(e) {
 			img.src = imgUrl;
 		}
 	}
+
+	// C: "Capture animation" (begin saving frames to make an animated GIF)
+	if ( e.keyCode == 67 ) {
+		if (typeof screen === 'object') {
+			if (screen.isCapturing) {
+				screen.stopCapture();
+			}
+			else {
+				screen.startCapture();
+			}
+		}
+	}
+
 	// ESC: stop
 	else if ( e.keyCode == 27 ) {
 		if (typeof screen === 'object') {
@@ -318,6 +331,8 @@ function Screen(width, height, sprite) {
 	this.data = [];
 	this.prevData = [];
 	this.updates = [];
+	this.gif = null;
+	this.isCapturing = false;
 	this.isPlaying = false;
 }
 
@@ -337,6 +352,8 @@ Screen.prototype = {
 				this.data[y][x] = 32;
 			}
 		}
+		context.fillStyle = '#005d8e';
+		context.fillRect(0, 0, canvas.width, canvas.height);
 	},
 	initialize: function() {
 		this.clearScreen();
@@ -470,7 +487,6 @@ Screen.prototype = {
 		this.prevData = this.data.map(function(arr) {
 			return arr.slice();
 		});
-
 	},
 	drawCursor: function(x,y) {
 		thisX = x*this.spriteWidth;
@@ -487,6 +503,31 @@ Screen.prototype = {
 			str += '\r\n';
 		}
  		console.log(str);
+	},
+	startCapture: function() {
+		this.gif = new GIF({
+			workers: 6,
+			quality: 10,
+			repeat: 0,
+			// colorDepth: 2,
+			// palSize: 1,
+			width: this.canvasWidth,
+			height: this.canvasHeight,
+			background: '#005d8e'
+		});
+		this.gif.on('finished', function(blob) {
+			// window.open( URL.createObjectURL(blob) );
+			var blobReader = new FileReader();
+			blobReader.onload = function(e){
+				window.location.href = blobReader.result;
+			}
+			blobReader.readAsDataURL(blob);
+		});
+		this.isCapturing = true;
+	},
+	stopCapture: function() {
+		this.isCapturing = false;
+		this.gif.render();
 	}
 };
 
@@ -537,7 +578,13 @@ function render( now ) {
 		}
  		//before = now - (delta % delay);
  		before = now;
+		// If we are capturing, send this frame to the GIF renderer
+		if (screen.isCapturing) {
+			// or copy the pixels from a canvas context
+			screen.gif.addFrame(context, {copy: true, delay: delay});
+		}
 	}
+
 	// If stream hasn't run out, and nobody has pushed Stop,
 	// then continue requesting animation
 	if ( ( stream.getIndex() < stream.getLength() ) && screen.isPlaying) {
