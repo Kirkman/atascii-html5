@@ -1,6 +1,7 @@
 var canvas = document.getElementById('atascii');
 var context = canvas.getContext('2d');
 
+
 // 30 characters per second should emulate 300bps.
 var cps = 30;
 var chunks = 1;
@@ -270,6 +271,32 @@ function loadFileFromUrl( url ) {
 
 
 
+function canvasToIndexedPixels( ctx, width, height, palette ) {
+	// var t0 = performance.now();
+
+	// Iterating over a Uint32Array instead of the raw ImageData avoids
+	// needing to pull out the RGB values separately, or increment the index while iterating.
+	// Also avoids having to join the values or cast them to strings. 
+	// All in all, HUGE performance boost in finding the index for each pixel.
+
+	var pixels_raw = ctx.getImageData(0, 0, width, height).data;
+	var pixels_buf32 = new Uint32Array(pixels_raw.buffer);
+	var indexed_pixels = [];
+
+	var l = pixels_buf32.length;
+	for (var i = 0; i < l; i++) {
+		var color = pixels_buf32[i];
+		// Get the palette index for this color. If the color isn't found (transparent pixel, etc), 
+		// we'll use math.Abs() to change -1 to +1, which is the index of the background blue color.
+		var color_index = Math.abs( palette.indexOf(color) );
+		indexed_pixels.push( color_index );
+	}
+	// var t1 = performance.now();
+	// console.log("Indexing this frame took " + (t1 - t0) + " milliseconds.")
+
+	return indexed_pixels;
+}
+
 
 // Function is called when file selector fires onChange 
 function parseFile( files ) {
@@ -331,6 +358,9 @@ function Screen(width, height, sprite) {
 	this.data = [];
 	this.prevData = [];
 	this.updates = [];
+	this.palette = [];
+	this.paletteUInt32 = [];
+	this.buf = null;
 	this.gif = null;
 	this.isCapturing = false;
 	this.isPlaying = false;
@@ -505,29 +535,48 @@ Screen.prototype = {
  		console.log(str);
 	},
 	startCapture: function() {
-		this.gif = new GIF({
-			workers: 6,
-			quality: 10,
-			repeat: 0,
-			// colorDepth: 2,
-			// palSize: 1,
-			width: this.canvasWidth,
-			height: this.canvasHeight,
-			background: '#005d8e'
-		});
-		this.gif.on('finished', function(blob) {
-			// window.open( URL.createObjectURL(blob) );
-			var blobReader = new FileReader();
-			blobReader.onload = function(e){
-				window.location.href = blobReader.result;
+		// Initialize a large buffer to hold animation data. Hopefully won't use all this space.
+		this.buf = new buffer.Buffer(1024 * 1024 * 1024);
+
+		this.palette = [
+			0x7db6de,
+			0x005d8e
+		];
+
+		// 4292785789 = FFDEB67D (Unsigned 32 int, values appear backwards)
+		// 4287520000 = FF8E5D00 (Unsigned 32 int, values appear backwards)
+		// 245760 = 0003C000 (I presume this is a transparent pixel)
+
+		this.paletteUInt32 = [
+			4292785789, 
+			4287520000
+		];
+
+		// Initialize omggif's GifWriter
+		this.gif = new GifWriter(
+			this.buf, 
+			this.canvasWidth, 
+			this.canvasHeight, 
+			{
+				loop: 1
 			}
-			blobReader.readAsDataURL(blob);
-		});
+		);
+
 		this.isCapturing = true;
 	},
 	stopCapture: function() {
 		this.isCapturing = false;
-		this.gif.render();
+
+		var blob = new Blob([ this.buf.slice(0, this.gif.end()) ], {type: "application/octet-stream"});
+
+		saveAs(blob, "animation.gif");
+
+		// THIS ROUTINE DOESN'T NEED FileSaver.js, BUT IS NOT ALWAYS RELIABLE
+		// var blobReader = new FileReader();
+		// blobReader.onload = function(e){
+		// 	window.location.href = blobReader.result;
+		// }
+		// blobReader.readAsDataURL(blob);
 	}
 };
 
@@ -581,7 +630,23 @@ function render( now ) {
 		// If we are capturing, send this frame to the GIF renderer
 		if (screen.isCapturing) {
 			// or copy the pixels from a canvas context
-			screen.gif.addFrame(context, {copy: true, delay: delay});
+			var frame = canvasToIndexedPixels( 
+				context, 
+				screen.canvasWidth, 
+				screen.canvasHeight, 
+				screen.paletteUInt32 
+			);
+			screen.gif.addFrame(
+				0, 
+				0, 
+				screen.canvasWidth, 
+				screen.canvasHeight, 
+				frame, 
+				{
+					palette: screen.palette, 
+					delay: delay/10 // omggif uses centiseconds rather than milliseconds. Annoying.
+				}
+			);
 		}
 	}
 
