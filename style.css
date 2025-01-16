@@ -1,8 +1,8 @@
 @font-face {
-  font-family: 'AtariClassicChunky';
-  src: url('fontsets/AtariClassicChunky.eot?#iefix') format('fontsets/embedded-opentype'),  url('fontsets/AtariClassicChunky.woff') format('woff'), url('fontsets/AtariClassicChunky.ttf')  format('truetype'), url('fontsets/AtariClassicChunky.svg#AtariClassicChunky') format('svg');
-  font-weight: normal;
-  font-style: normal;
+	font-family: 'AtariClassicChunky';
+	src: url('fontsets/AtariClassicChunky.eot?#iefix') format('fontsets/embedded-opentype'),  url('fontsets/AtariClassicChunky.woff') format('woff'), url('fontsets/AtariClassicChunky.ttf')  format('truetype'), url('fontsets/AtariClassicChunky.svg#AtariClassicChunky') format('svg');
+	font-weight: normal;
+	font-style: normal;
 }
 
 body {
@@ -42,6 +42,47 @@ section#background-info {
 	text-align: left;
 	width: 80%;
 }
+
+#controls {
+	display: flex; 
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.control-row { 
+	display: flex;
+	flex-direction: row;
+	gap: 1rem;
+	justify-content: center;
+}
+
+.control-row.flex-vertical h2,
+.control-row.flex-vertical h3,
+.control-row.flex-vertical p,
+.control-row.flex-vertical select {
+	margin: 0px auto;
+}
+
+.control-row.flex-vertical {
+	flex-direction: column;
+	gap: 0.25rem;
+	margin: 1rem 0px;
+}
+
+.control-row.flex-vertical select {
+	margin: 0px auto;
+}
+
+.control-row.optional-controls {
+	display: none;
+} 
+
+.control-row.disabled-controls input {
+	pointer-events: none;
+} 
+
+
+
 #canvas-container {
 	margin: 32px auto;
 	position: relative;
@@ -50,6 +91,14 @@ section#background-info {
 }
 
 #canvas-container.fullscreen {
+}
+
+#canvas-container canvas, 
+#canvas-overlay {
+	width: 100%;
+	height: 100%;
+	image-rendering: pixelated;
+
 }
 
 #canvas-container canvas, 

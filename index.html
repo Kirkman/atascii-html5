@@ -12,246 +12,260 @@
 	<h1>AtasciiTube</h1>
 	<p>This is an experimental ATASCII animation viewer which uses the HTML5 	&lt;canvas&gt; element and Javascript.</p>
 
-	<!--
-	<h3>Upload an ATASCII animation</h3>
-	<input type="file" id="fileSelector" onchange="parseFile(this.files)">
-	-->
-	<h3>Choose an ATASCII file</h3>
-	<select id="fileSelector">
-		<option value="" selected="true" disabled="disabled">Choose a file</option>
-		<option value="./textfiles/agent003.mes">agent003.mes</option>
-		<option value="./textfiles/TOONS/COMMANDO.CTN">COMMANDO.CTN</option>
-		<!--<option value="./textfiles/commando.mvi">commando.mvi</option>-->
-		<option value="./textfiles/comodore.mvi">comodore.mvi</option>
-		<option value="./textfiles/creature.mvi">creature.mvi</option>
-		<option value="./textfiles/escape3.mes">escape3.mes</option>
-		<option value="./textfiles/hackula.mes">hackula.mes</option>
-		<!--<option value="./textfiles/journey.mvi">journey.mvi</option>-->
-		<option value="./textfiles/knight.sho">knight.sho</option>
-		<option value="./textfiles/lawrence.mes">lawrence.mes</option>
-		<option value="./textfiles/pirates.mvi">pirates.mvi</option>
-		<option value="./textfiles/starwrek.mes">starwrek.mes</option>
-		<option value="./textfiles/starwrek2.mes">starwrek2.mes</option>
-		<option value="./textfiles/starwrek3.mes">starwrek3.mes</option>
-		<option value="./textfiles/starwrek3b.mes">starwrek3b.mes</option>
-		<option value="./textfiles/wheel.mes">wheel.mes</option>
+	<div id="controls">
+		<div class="control-row flex-vertical">
+			<h3>Choose a modem speed</h3>
+			<p>(300-2400 bps were typical at the time, but may feel slow today)</p>
+			<select id="speed">
+				<option value="300" selected="true">300 bps</option>
+				<option value="600">600 bps</option>
+				<option value="1200">1200 bps</option>
+				<option value="2400">2400 bps</option>
+				<option value="4800">4800 bps</option>
+				<option value="9600">9600 bps</option>
+				<option value="14400">14400 bps</option>
+			</select>
+		</div><!-- end .control-row -->
 
-		<option value="./textfiles/TOONS/ASCII.CTN">ASCII.CTN</option>
-		<option value="./textfiles/TOONS/BRUCE.OAS">BRUCE.OAS</option>
-		<option value="./textfiles/TOONS/BRUCELEE.CTN">BRUCELEE.CTN</option>
-		<option value="./textfiles/TOONS/CARTOON.MNU">CARTOON.MNU</option>
-		<option value="./textfiles/TOONS/INDY.OAS">INDY.OAS</option>
-		<option value="./textfiles/TOONS/JETSONS.CTN">JETSONS.CTN</option>
-		<option value="./textfiles/TOONS/NINJA.MNU">NINJA.MNU</option>
-		<option value="./textfiles/TOONS/NINJA1.HBO">NINJA1.HBO</option>
-		<option value="./textfiles/TOONS/NINJA2.HBO">NINJA2.HBO</option>
-		<option value="./textfiles/TOONS/NINJA3.HBO">NINJA3.HBO</option>
-		<option value="./textfiles/TOONS/NINJA4.HBO">NINJA4.HBO</option>
-		<option value="./textfiles/TOONS/NINJA5.HBO">NINJA5.HBO</option>
-		<option value="./textfiles/TOONS/OOPS.CTN">OOPS.CTN</option>
-		<option value="./textfiles/TOONS/RODGERS.OAS">RODGERS.OAS</option>
-		<option value="./textfiles/TOONS/TNT.OAS">TNT.OAS</option>
-		<option value="./textfiles/TOONS/TOILET.CTN">TOILET.CTN</option>
-		<option value="./textfiles/TOONS/TOONS2.MNU">TOONS2.MNU</option>
-		<option value="./textfiles/TOONS/TREK1.OAS">TREK1.OAS</option>
-		<option value="./textfiles/TOONS/TREK2.OAS">TREK2.OAS</option>
-		<option value="./textfiles/TOONS/TRUTH.OAS">TRUTH.OAS</option>
-		<option value="./textfiles/TOONS/WRESTLIN.CTN">WRESTLIN.CTN</option>
+		<div class="control-row optional-controls">
+			<input type="checkbox" id="full-screen" name="full-screen" value="true">
+			<label for="full-screen"> Full-screen mode</label>
+		</div><!-- end .control-row -->
+		<div class="control-row optional-controls">
+			<input type="checkbox" id="diagnostic" name="diagnostic" value="true">
+			<label for="diagnostic"> Diagnostic mode</label>
+		</div><!-- end .control-row -->
 
-		<option value="./textfiles/new-year/newyear1.ata">newyear1.ata</option>
-		<option value="./textfiles/new-year/newyear2.ata">newyear2.ata</option>
-		<option value="./textfiles/new-year/newyear3.ata">newyear3.ata</option>
-		<option value="./textfiles/new-year/newyear5.ata">newyear4.ata</option>
+		<div class="control-row flex-vertical optional-controls disabled-controls">
+			<h3>Upload an ATASCII animation</h3>
+			<input type="file" id="fileUpload">
+		</div><!-- end .control-row -->
 
+		<div class="control-row flex-vertical">
+			<h3>Choose an ATASCII file</h3>
+			<select id="fileSelector">
+				<option value="" selected="true" disabled="disabled">Choose a file</option>
+				<option value="./textfiles/agent003.mes">agent003.mes</option>
+				<option value="./textfiles/TOONS/COMMANDO.CTN">COMMANDO.CTN</option>
+				<!--<option value="./textfiles/commando.mvi">commando.mvi</option>-->
+				<option value="./textfiles/comodore.mvi">comodore.mvi</option>
+				<option value="./textfiles/creature.mvi">creature.mvi</option>
+				<option value="./textfiles/escape3.mes">escape3.mes</option>
+				<option value="./textfiles/hackula.mes">hackula.mes</option>
+				<!--<option value="./textfiles/journey.mvi">journey.mvi</option>-->
+				<option value="./textfiles/knight.sho">knight.sho</option>
+				<option value="./textfiles/lawrence.mes">lawrence.mes</option>
+				<option value="./textfiles/pirates.mvi">pirates.mvi</option>
+				<option value="./textfiles/starwrek.mes">starwrek.mes</option>
+				<option value="./textfiles/starwrek2.mes">starwrek2.mes</option>
+				<option value="./textfiles/starwrek3.mes">starwrek3.mes</option>
+				<option value="./textfiles/starwrek3b.mes">starwrek3b.mes</option>
+				<option value="./textfiles/wheel.mes">wheel.mes</option>
 
-		<option value="./textfiles/easy-animator/BANK.TXT">BANK.TXT</option>
-		<option value="./textfiles/easy-animator/TITLE.TXT">TITLE.TXT</option>
+				<option value="./textfiles/TOONS/ASCII.CTN">ASCII.CTN</option>
+				<option value="./textfiles/TOONS/BRUCE.OAS">BRUCE.OAS</option>
+				<option value="./textfiles/TOONS/BRUCELEE.CTN">BRUCELEE.CTN</option>
+				<option value="./textfiles/TOONS/CARTOON.MNU">CARTOON.MNU</option>
+				<option value="./textfiles/TOONS/INDY.OAS">INDY.OAS</option>
+				<option value="./textfiles/TOONS/JETSONS.CTN">JETSONS.CTN</option>
+				<option value="./textfiles/TOONS/NINJA.MNU">NINJA.MNU</option>
+				<option value="./textfiles/TOONS/NINJA1.HBO">NINJA1.HBO</option>
+				<option value="./textfiles/TOONS/NINJA2.HBO">NINJA2.HBO</option>
+				<option value="./textfiles/TOONS/NINJA3.HBO">NINJA3.HBO</option>
+				<option value="./textfiles/TOONS/NINJA4.HBO">NINJA4.HBO</option>
+				<option value="./textfiles/TOONS/NINJA5.HBO">NINJA5.HBO</option>
+				<option value="./textfiles/TOONS/OOPS.CTN">OOPS.CTN</option>
+				<option value="./textfiles/TOONS/RODGERS.OAS">RODGERS.OAS</option>
+				<option value="./textfiles/TOONS/RODGERS2.OAS">RODGERS2.OAS</option>
+				<option value="./textfiles/TOONS/TNT.OAS">TNT.OAS</option>
+				<option value="./textfiles/TOONS/TOILET.CTN">TOILET.CTN</option>
+				<option value="./textfiles/TOONS/TOONS2.MNU">TOONS2.MNU</option>
+				<option value="./textfiles/TOONS/TREK1.OAS">TREK1.OAS</option>
+				<option value="./textfiles/TOONS/TREK2.OAS">TREK2.OAS</option>
+				<option value="./textfiles/TOONS/TRUTH.OAS">TRUTH.OAS</option>
+				<option value="./textfiles/TOONS/WRESTLIN.CTN">WRESTLIN.CTN</option>
 
-		<option value="./textfiles/robo/ROBOINTR.ATA">ROBOINTR.ATA</option>
-
-		<option value="./textfiles/atascii_anims/ascanim/ABRECH.FLM">ABRECH.FLM</option>
-		<option value="./textfiles/atascii_anims/ascanim/ANIMATE.MVI">ANIMATE.MVI</option>
-		<option value="./textfiles/atascii_anims/ascanim/DEMOFILM.FLM">DEMOFILM.FLM</option>
-		<option value="./textfiles/atascii_anims/ascmov/PARIS007.MVI">PARIS007.MVI</option>
-		<option value="./textfiles/atascii_anims/ascmov2/"></option>
-		<option value="./textfiles/atascii_anims"></option>
-		<option value="./textfiles/atascii_anims"></option>
-
-
-		<option value="./textfiles/TEXTPIC1/ACIDDEAD.TXT">ACIDDEAD.TXT</option>
-		<option value="./textfiles/TEXTPIC1/AIRPLANE.TXT">AIRPLANE.TXT</option>
-		<option value="./textfiles/TEXTPIC1/ALF.TXT">ALF.TXT</option>
-		<option value="./textfiles/TEXTPIC1/AMAZON.TXT">AMAZON.TXT</option>
-		<option value="./textfiles/TEXTPIC1/ANTIC.TXT">ANTIC.TXT</option>
-		<option value="./textfiles/TEXTPIC1/ASTRO.TXT">ASTRO.TXT</option>
-		<option value="./textfiles/TEXTPIC1/AT2600.TXT">AT2600.TXT</option>
-		<option value="./textfiles/TEXTPIC1/ATARIMAN.TXT">ATARIMAN.TXT</option>
-		<option value="./textfiles/TEXTPIC1/ATLOGO.TXT">ATLOGO.TXT</option>
-		<option value="./textfiles/TEXTPIC1/AUTOBOT.TXT">AUTOBOT.TXT</option>
-		<option value="./textfiles/TEXTPIC1/AUTOGRAF.TXT">AUTOGRAF.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BABY.TXT">BABY.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BASKBALL.TXT">BASKBALL.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BASKET.TXT">BASKET.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BATMAN.TXT">BATMAN.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BATTLEZN.TXT">BATTLEZN.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BCAKE.TXT">BCAKE.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BEAM.TXT">BEAM.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BEATLES.TXT">BEATLES.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BELLS.TXT">BELLS.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BERT.TXT">BERT.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BGLOVE.TXT">BGLOVE.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BIG.TXT">BIG.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BIRD.TXT">BIRD.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BLAM.TXT">BLAM.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BOFPRAY.TXT">BOFPRAY.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BOOK.TXT">BOOK.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BOOT.TXT">BOOT.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BOUQUET.TXT">BOUQUET.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BRIDGE.TXT">BRIDGE.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BRONTO.TXT">BRONTO.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BROOMSTK.TXT">BROOMSTK.TXT</option>
-		<option value="./textfiles/TEXTPIC1/BULLWINK.TXT">BULLWINK.TXT</option>
-		<option value="./textfiles/TEXTPIC1/CAR.TXT">CAR.TXT</option>
-		<option value="./textfiles/TEXTPIC1/CHESS.TXT">CHESS.TXT</option>
-		<option value="./textfiles/TEXTPIC1/CLOWN.TXT">CLOWN.TXT</option>
-		<option value="./textfiles/TEXTPIC1/COFFEE.TXT">COFFEE.TXT</option>
-		<option value="./textfiles/TEXTPIC1/CROSS.TXT">CROSS.TXT</option>
-		<option value="./textfiles/TEXTPIC1/CUPID.TXT">CUPID.TXT</option>
-		<option value="./textfiles/TEXTPIC1/DAISY.TXT">DAISY.TXT</option>
-		<option value="./textfiles/TEXTPIC1/DANCERS.TXT">DANCERS.TXT</option>
-		<option value="./textfiles/TEXTPIC1/DARTH.TXT">DARTH.TXT</option>
-		<option value="./textfiles/TEXTPIC1/DINNER.TXT">DINNER.TXT</option>
-		<option value="./textfiles/TEXTPIC1/DIPLOMA.TXT">DIPLOMA.TXT</option>
-		<option value="./textfiles/TEXTPIC1/DOLLAR.TXT">DOLLAR.TXT</option>
-		<option value="./textfiles/TEXTPIC1/DPLANET1.TXT">DPLANET1.TXT</option>
-		<option value="./textfiles/TEXTPIC1/DRAGON.TXT">DRAGON.TXT</option>
-		<option value="./textfiles/TEXTPIC1/DUDECAR.TXT">DUDECAR.TXT</option>
-		<option value="./textfiles/TEXTPIC1/ELF.TXT">ELF.TXT</option>
-		<option value="./textfiles/TEXTPIC1/ENTERPZ.TXT">ENTERPZ.TXT</option>
-		<option value="./textfiles/TEXTPIC1/ENTRPRS.TXT">ENTRPRS.TXT</option>
-		<option value="./textfiles/TEXTPIC1/EXCELSIR.TXT">EXCELSIR.TXT</option>
-		<option value="./textfiles/TEXTPIC1/FAIRY.TXT">FAIRY.TXT</option>
-		<option value="./textfiles/TEXTPIC1/FBHELMET.TXT">FBHELMET.TXT</option>
-		<option value="./textfiles/TEXTPIC1/FIRST.TXT">FIRST.TXT</option>
-		<option value="./textfiles/TEXTPIC1/FOOTBALL.TXT">FOOTBALL.TXT</option>
-		<option value="./textfiles/TEXTPIC1/FROG.TXT">FROG.TXT</option>
-		<option value="./textfiles/TEXTPIC1/GBUSTER.TXT">GBUSTER.TXT</option>
-		<option value="./textfiles/TEXTPIC1/GODZILLA.TXT">GODZILLA.TXT</option>
-		<option value="./textfiles/TEXTPIC1/GRADUATE.TXT">GRADUATE.TXT</option>
-		<option value="./textfiles/TEXTPIC1/GREEN.TXT">GREEN.TXT</option>
-		<option value="./textfiles/TEXTPIC1/GUITAR.TXT">GUITAR.TXT</option>
-		<option value="./textfiles/TEXTPIC1/GUN.TXT">GUN.TXT</option>
-		<option value="./textfiles/TEXTPIC1/HAMBURGR.TXT">HAMBURGR.TXT</option>
-		<option value="./textfiles/TEXTPIC1/HEADS.TXT">HEADS.TXT</option>
-		<option value="./textfiles/TEXTPIC1/HOME.TXT">HOME.TXT</option>
-		<option value="./textfiles/TEXTPIC1/HORSE.TXT">HORSE.TXT</option>
-		<option value="./textfiles/TEXTPIC1/HOTROD.TXT">HOTROD.TXT</option>
-		<option value="./textfiles/TEXTPIC1/ICECREAM.TXT">ICECREAM.TXT</option>
-		<option value="./textfiles/TEXTPIC1/JOGGER.TXT">JOGGER.TXT</option>
-		<option value="./textfiles/TEXTPIC1/JOYSTCK.TXT">JOYSTCK.TXT</option>
-		<option value="./textfiles/TEXTPIC1/JOYSTICK.TXT">JOYSTICK.TXT</option>
-		<option value="./textfiles/TEXTPIC1/KID.TXT">KID.TXT</option>
-		<option value="./textfiles/TEXTPIC1/KLINGON.TXT">KLINGON.TXT</option>
-		<option value="./textfiles/TEXTPIC1/KOOLDUDE.TXT">KOOLDUDE.TXT</option>
-		<option value="./textfiles/TEXTPIC1/LASERTAG.TXT">LASERTAG.TXT</option>
+				<option value="./textfiles/new-year/newyear1.ata">newyear1.ata</option>
+				<option value="./textfiles/new-year/newyear2.ata">newyear2.ata</option>
+				<option value="./textfiles/new-year/newyear3.ata">newyear3.ata</option>
+				<option value="./textfiles/new-year/newyear5.ata">newyear4.ata</option>
 
 
-		<option value="./textfiles/TEXTPIC2/MADONNA.TXT">MADONNA.TXT</option>
-		<option value="./textfiles/TEXTPIC2/MARY.TXT">MARY.TXT</option>
-		<option value="./textfiles/TEXTPIC2/MAX.TXT">MAX.TXT</option>
-		<option value="./textfiles/TEXTPIC2/MAX2.TXT">MAX2.TXT</option>
-		<option value="./textfiles/TEXTPIC2/MEDICINE.TXT">MEDICINE.TXT</option>
-		<option value="./textfiles/TEXTPIC2/MONSTER.TXT">MONSTER.TXT</option>
-		<option value="./textfiles/TEXTPIC2/MOOSE.TXT">MOOSE.TXT</option>
-		<option value="./textfiles/TEXTPIC2/MRCOOL.TXT">MRCOOL.TXT</option>
-		<option value="./textfiles/TEXTPIC2/MTV.TXT">MTV.TXT</option>
-		<option value="./textfiles/TEXTPIC2/MUNGOL.TXT">MUNGOL.TXT</option>
-		<option value="./textfiles/TEXTPIC2/NASA.TXT">NASA.TXT</option>
-		<option value="./textfiles/TEXTPIC2/NINJA.TXT">NINJA.TXT</option>
-		<option value="./textfiles/TEXTPIC2/NIXON.TXT">NIXON.TXT</option>
-		<option value="./textfiles/TEXTPIC2/NOPIG.TXT">NOPIG.TXT</option>
-		<option value="./textfiles/TEXTPIC2/NORMAN.TXT">NORMAN.TXT</option>
-		<option value="./textfiles/TEXTPIC2/OPUS.TXT">OPUS.TXT</option>
-		<option value="./textfiles/TEXTPIC2/OVERTIME.TXT">OVERTIME.TXT</option>
-		<option value="./textfiles/TEXTPIC2/PAGODA2.TXT">PAGODA2.TXT</option>
-		<option value="./textfiles/TEXTPIC2/PAINTS.TXT">PAINTS.TXT</option>
-		<option value="./textfiles/TEXTPIC2/PBBUNY.TXT">PBBUNY.TXT</option>
-		<option value="./textfiles/TEXTPIC2/PIRATE1.TXT">PIRATE1.TXT</option>
-		<option value="./textfiles/TEXTPIC2/PIRATE2.TXT">PIRATE2.TXT</option>
-		<option value="./textfiles/TEXTPIC2/PITCHER.TXT">PITCHER.TXT</option>
-		<option value="./textfiles/TEXTPIC2/PLANET.TXT">PLANET.TXT</option>
-		<option value="./textfiles/TEXTPIC2/PLAYBOY.TXT">PLAYBOY.TXT</option>
-		<option value="./textfiles/TEXTPIC2/POPCORN.TXT">POPCORN.TXT</option>
-		<option value="./textfiles/TEXTPIC2/POWERLRD.TXT">POWERLRD.TXT</option>
-		<option value="./textfiles/TEXTPIC2/PTOHEAD.TXT">PTOHEAD.TXT</option>
-		<option value="./textfiles/TEXTPIC2/QMARK.TXT">QMARK.TXT</option>
-		<option value="./textfiles/TEXTPIC2/RADIO.TXT">RADIO.TXT</option>
-		<option value="./textfiles/TEXTPIC2/RAMCHIP.TXT">RAMCHIP.TXT</option>
-		<option value="./textfiles/TEXTPIC2/REAGAN.TXT">REAGAN.TXT</option>
-		<option value="./textfiles/TEXTPIC2/REDSKINS.TXT">REDSKINS.TXT</option>
-		<option value="./textfiles/TEXTPIC2/RELIANT.TXT">RELIANT.TXT</option>
-		<option value="./textfiles/TEXTPIC2/RETREAT.TXT">RETREAT.TXT</option>
-		<option value="./textfiles/TEXTPIC2/ROSE.TXT">ROSE.TXT</option>
-		<option value="./textfiles/TEXTPIC2/ROSE2.TXT">ROSE2.TXT</option>
-		<option value="./textfiles/TEXTPIC2/RUMBLE.TXT">RUMBLE.TXT</option>
-		<option value="./textfiles/TEXTPIC2/SABRES.TXT">SABRES.TXT</option>
-		<option value="./textfiles/TEXTPIC2/SAILBOAT.TXT">SAILBOAT.TXT</option>
-		<option value="./textfiles/TEXTPIC2/SATDISH.TXT">SATDISH.TXT</option>
-		<option value="./textfiles/TEXTPIC2/SCHRODER.TXT">SCHRODER.TXT</option>
-		<option value="./textfiles/TEXTPIC2/SCREAMER.TXT">SCREAMER.TXT</option>
-		<option value="./textfiles/TEXTPIC2/SHOOT.TXT">SHOOT.TXT</option>
-		<option value="./textfiles/TEXTPIC2/SHOPCART.TXT">SHOPCART.TXT</option>
-		<option value="./textfiles/TEXTPIC2/SKIER.TXT">SKIER.TXT</option>
-		<option value="./textfiles/TEXTPIC2/SKULL.TXT">SKULL.TXT</option>
-		<option value="./textfiles/TEXTPIC2/SKULLP.TXT">SKULLP.TXT</option>
-		<option value="./textfiles/TEXTPIC2/SKULLSWR.TXT">SKULLSWR.TXT</option>
-		<option value="./textfiles/TEXTPIC2/SKULWING.TXT">SKULWING.TXT</option>
-		<option value="./textfiles/TEXTPIC2/SMALL.TXT">SMALL.TXT</option>
-		<option value="./textfiles/TEXTPIC2/SMOKER.TXT">SMOKER.TXT</option>
-		<option value="./textfiles/TEXTPIC2/SMURF.TXT">SMURF.TXT</option>
-		<option value="./textfiles/TEXTPIC2/SPLUG.TXT">SPLUG.TXT</option>
-		<option value="./textfiles/TEXTPIC2/SPUDS.TXT">SPUDS.TXT</option>
-		<option value="./textfiles/TEXTPIC2/STAIRS.TXT">STAIRS.TXT</option>
-		<option value="./textfiles/TEXTPIC2/STARSHIP.TXT">STARSHIP.TXT</option>
-		<option value="./textfiles/TEXTPIC2/STAY.TXT">STAY.TXT</option>
-		<option value="./textfiles/TEXTPIC2/STEELWRK.TXT">STEELWRK.TXT</option>
-		<option value="./textfiles/TEXTPIC2/SUB.TXT">SUB.TXT</option>
-		<option value="./textfiles/TEXTPIC2/TAILS.TXT">TAILS.TXT</option>
-		<option value="./textfiles/TEXTPIC2/TEAPOT.TXT">TEAPOT.TXT</option>
-		<option value="./textfiles/TEXTPIC2/TRAIN.TXT">TRAIN.TXT</option>
-		<option value="./textfiles/TEXTPIC2/TRUCK.TXT">TRUCK.TXT</option>
-		<option value="./textfiles/TEXTPIC2/TRUCK1.TXT">TRUCK1.TXT</option>
-		<option value="./textfiles/TEXTPIC2/TUNNEL.TXT">TUNNEL.TXT</option>
-		<option value="./textfiles/TEXTPIC2/TURKEY.TXT">TURKEY.TXT</option>
-		<option value="./textfiles/TEXTPIC2/TURTLE.TXT">TURTLE.TXT</option>
-		<option value="./textfiles/TEXTPIC2/USEAGLE.TXT">USEAGLE.TXT</option>
-		<option value="./textfiles/TEXTPIC2/V.TXT">V.TXT</option>
-		<option value="./textfiles/TEXTPIC2/VOTEBOX.TXT">VOTEBOX.TXT</option>
-		<option value="./textfiles/TEXTPIC2/WARRIOR.TXT">WARRIOR.TXT</option>
-		<option value="./textfiles/TEXTPIC2/WHATEVER.TXT">WHATEVER.TXT</option>
-		<option value="./textfiles/TEXTPIC2/WITCH.TXT">WITCH.TXT</option>
-		<option value="./textfiles/TEXTPIC2/WIZARD.TXT">WIZARD.TXT</option>
-		<option value="./textfiles/TEXTPIC2/WIZATTIC.TXT">WIZATTIC.TXT</option>
-		<option value="./textfiles/TEXTPIC2/WREATH.TXT">WREATH.TXT</option>
-		<option value="./textfiles/TEXTPIC2/XMASTREE.TXT">XMASTREE.TXT</option>
-		<option value="./textfiles/TEXTPIC2/YELLOW.TXT">YELLOW.TXT</option>
+				<option value="./textfiles/easy-animator/BANK.TXT">BANK.TXT</option>
+				<option value="./textfiles/easy-animator/TITLE.TXT">TITLE.TXT</option>
 
-	</select>
+				<option value="./textfiles/robo/ROBOINTR.ATA">ROBOINTR.ATA</option>
 
-	<br/><input type="checkbox" id="full-screen" name="full-screen" value="true">
-	<label for="full-screen"> Full-screen mode</label>
-	<br/><input type="checkbox" id="diagnostic" name="diagnostic" value="true">
-	<label for="diagnostic"> Diagnostic mode</label>
-	<br/>
-	<select id="speed">
-		<option value="300" selected="true">300 bps</option>
-		<option value="600">600 bps</option>
-		<option value="1200">1200 bps</option>
-		<option value="2400">2400 bps</option>
-		<option value="4800">4800 bps</option>
-		<option value="9600">9600 bps</option>
-		<option value="14400">14400 bps</option>
-	</select>
+				<option value="./textfiles/atascii_anims/ascanim/ABRECH.FLM">ABRECH.FLM</option>
+				<option value="./textfiles/atascii_anims/ascanim/ANIMATE.MVI">ANIMATE.MVI</option>
+				<option value="./textfiles/atascii_anims/ascanim/DEMOFILM.FLM">DEMOFILM.FLM</option>
+				<option value="./textfiles/atascii_anims/ascmov/PARIS007.MVI">PARIS007.MVI</option>
+				<option value="./textfiles/atascii_anims/ascmov2/"></option>
+				<option value="./textfiles/atascii_anims"></option>
+				<option value="./textfiles/atascii_anims"></option>
+
+
+				<option value="./textfiles/TEXTPIC1/ACIDDEAD.TXT">ACIDDEAD.TXT</option>
+				<option value="./textfiles/TEXTPIC1/AIRPLANE.TXT">AIRPLANE.TXT</option>
+				<option value="./textfiles/TEXTPIC1/ALF.TXT">ALF.TXT</option>
+				<option value="./textfiles/TEXTPIC1/AMAZON.TXT">AMAZON.TXT</option>
+				<option value="./textfiles/TEXTPIC1/ANTIC.TXT">ANTIC.TXT</option>
+				<option value="./textfiles/TEXTPIC1/ASTRO.TXT">ASTRO.TXT</option>
+				<option value="./textfiles/TEXTPIC1/AT2600.TXT">AT2600.TXT</option>
+				<option value="./textfiles/TEXTPIC1/ATARIMAN.TXT">ATARIMAN.TXT</option>
+				<option value="./textfiles/TEXTPIC1/ATLOGO.TXT">ATLOGO.TXT</option>
+				<option value="./textfiles/TEXTPIC1/AUTOBOT.TXT">AUTOBOT.TXT</option>
+				<option value="./textfiles/TEXTPIC1/AUTOGRAF.TXT">AUTOGRAF.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BABY.TXT">BABY.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BASKBALL.TXT">BASKBALL.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BASKET.TXT">BASKET.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BATMAN.TXT">BATMAN.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BATTLEZN.TXT">BATTLEZN.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BCAKE.TXT">BCAKE.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BEAM.TXT">BEAM.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BEATLES.TXT">BEATLES.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BELLS.TXT">BELLS.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BERT.TXT">BERT.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BGLOVE.TXT">BGLOVE.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BIG.TXT">BIG.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BIRD.TXT">BIRD.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BLAM.TXT">BLAM.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BOFPRAY.TXT">BOFPRAY.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BOOK.TXT">BOOK.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BOOT.TXT">BOOT.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BOUQUET.TXT">BOUQUET.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BRIDGE.TXT">BRIDGE.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BRONTO.TXT">BRONTO.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BROOMSTK.TXT">BROOMSTK.TXT</option>
+				<option value="./textfiles/TEXTPIC1/BULLWINK.TXT">BULLWINK.TXT</option>
+				<option value="./textfiles/TEXTPIC1/CAR.TXT">CAR.TXT</option>
+				<option value="./textfiles/TEXTPIC1/CHESS.TXT">CHESS.TXT</option>
+				<option value="./textfiles/TEXTPIC1/CLOWN.TXT">CLOWN.TXT</option>
+				<option value="./textfiles/TEXTPIC1/COFFEE.TXT">COFFEE.TXT</option>
+				<option value="./textfiles/TEXTPIC1/CROSS.TXT">CROSS.TXT</option>
+				<option value="./textfiles/TEXTPIC1/CUPID.TXT">CUPID.TXT</option>
+				<option value="./textfiles/TEXTPIC1/DAISY.TXT">DAISY.TXT</option>
+				<option value="./textfiles/TEXTPIC1/DANCERS.TXT">DANCERS.TXT</option>
+				<option value="./textfiles/TEXTPIC1/DARTH.TXT">DARTH.TXT</option>
+				<option value="./textfiles/TEXTPIC1/DINNER.TXT">DINNER.TXT</option>
+				<option value="./textfiles/TEXTPIC1/DIPLOMA.TXT">DIPLOMA.TXT</option>
+				<option value="./textfiles/TEXTPIC1/DOLLAR.TXT">DOLLAR.TXT</option>
+				<option value="./textfiles/TEXTPIC1/DPLANET1.TXT">DPLANET1.TXT</option>
+				<option value="./textfiles/TEXTPIC1/DRAGON.TXT">DRAGON.TXT</option>
+				<option value="./textfiles/TEXTPIC1/DUDECAR.TXT">DUDECAR.TXT</option>
+				<option value="./textfiles/TEXTPIC1/ELF.TXT">ELF.TXT</option>
+				<option value="./textfiles/TEXTPIC1/ENTERPZ.TXT">ENTERPZ.TXT</option>
+				<option value="./textfiles/TEXTPIC1/ENTRPRS.TXT">ENTRPRS.TXT</option>
+				<option value="./textfiles/TEXTPIC1/EXCELSIR.TXT">EXCELSIR.TXT</option>
+				<option value="./textfiles/TEXTPIC1/FAIRY.TXT">FAIRY.TXT</option>
+				<option value="./textfiles/TEXTPIC1/FBHELMET.TXT">FBHELMET.TXT</option>
+				<option value="./textfiles/TEXTPIC1/FIRST.TXT">FIRST.TXT</option>
+				<option value="./textfiles/TEXTPIC1/FOOTBALL.TXT">FOOTBALL.TXT</option>
+				<option value="./textfiles/TEXTPIC1/FROG.TXT">FROG.TXT</option>
+				<option value="./textfiles/TEXTPIC1/GBUSTER.TXT">GBUSTER.TXT</option>
+				<option value="./textfiles/TEXTPIC1/GODZILLA.TXT">GODZILLA.TXT</option>
+				<option value="./textfiles/TEXTPIC1/GRADUATE.TXT">GRADUATE.TXT</option>
+				<option value="./textfiles/TEXTPIC1/GREEN.TXT">GREEN.TXT</option>
+				<option value="./textfiles/TEXTPIC1/GUITAR.TXT">GUITAR.TXT</option>
+				<option value="./textfiles/TEXTPIC1/GUN.TXT">GUN.TXT</option>
+				<option value="./textfiles/TEXTPIC1/HAMBURGR.TXT">HAMBURGR.TXT</option>
+				<option value="./textfiles/TEXTPIC1/HEADS.TXT">HEADS.TXT</option>
+				<option value="./textfiles/TEXTPIC1/HOME.TXT">HOME.TXT</option>
+				<option value="./textfiles/TEXTPIC1/HORSE.TXT">HORSE.TXT</option>
+				<option value="./textfiles/TEXTPIC1/HOTROD.TXT">HOTROD.TXT</option>
+				<option value="./textfiles/TEXTPIC1/ICECREAM.TXT">ICECREAM.TXT</option>
+				<option value="./textfiles/TEXTPIC1/JOGGER.TXT">JOGGER.TXT</option>
+				<option value="./textfiles/TEXTPIC1/JOYSTCK.TXT">JOYSTCK.TXT</option>
+				<option value="./textfiles/TEXTPIC1/JOYSTICK.TXT">JOYSTICK.TXT</option>
+				<option value="./textfiles/TEXTPIC1/KID.TXT">KID.TXT</option>
+				<option value="./textfiles/TEXTPIC1/KLINGON.TXT">KLINGON.TXT</option>
+				<option value="./textfiles/TEXTPIC1/KOOLDUDE.TXT">KOOLDUDE.TXT</option>
+				<option value="./textfiles/TEXTPIC1/LASERTAG.TXT">LASERTAG.TXT</option>
+
+
+				<option value="./textfiles/TEXTPIC2/MADONNA.TXT">MADONNA.TXT</option>
+				<option value="./textfiles/TEXTPIC2/MARY.TXT">MARY.TXT</option>
+				<option value="./textfiles/TEXTPIC2/MAX.TXT">MAX.TXT</option>
+				<option value="./textfiles/TEXTPIC2/MAX2.TXT">MAX2.TXT</option>
+				<option value="./textfiles/TEXTPIC2/MEDICINE.TXT">MEDICINE.TXT</option>
+				<option value="./textfiles/TEXTPIC2/MONSTER.TXT">MONSTER.TXT</option>
+				<option value="./textfiles/TEXTPIC2/MOOSE.TXT">MOOSE.TXT</option>
+				<option value="./textfiles/TEXTPIC2/MRCOOL.TXT">MRCOOL.TXT</option>
+				<option value="./textfiles/TEXTPIC2/MTV.TXT">MTV.TXT</option>
+				<option value="./textfiles/TEXTPIC2/MUNGOL.TXT">MUNGOL.TXT</option>
+				<option value="./textfiles/TEXTPIC2/NASA.TXT">NASA.TXT</option>
+				<option value="./textfiles/TEXTPIC2/NINJA.TXT">NINJA.TXT</option>
+				<option value="./textfiles/TEXTPIC2/NIXON.TXT">NIXON.TXT</option>
+				<option value="./textfiles/TEXTPIC2/NOPIG.TXT">NOPIG.TXT</option>
+				<option value="./textfiles/TEXTPIC2/NORMAN.TXT">NORMAN.TXT</option>
+				<option value="./textfiles/TEXTPIC2/OPUS.TXT">OPUS.TXT</option>
+				<option value="./textfiles/TEXTPIC2/OVERTIME.TXT">OVERTIME.TXT</option>
+				<option value="./textfiles/TEXTPIC2/PAGODA2.TXT">PAGODA2.TXT</option>
+				<option value="./textfiles/TEXTPIC2/PAINTS.TXT">PAINTS.TXT</option>
+				<option value="./textfiles/TEXTPIC2/PBBUNY.TXT">PBBUNY.TXT</option>
+				<option value="./textfiles/TEXTPIC2/PIRATE1.TXT">PIRATE1.TXT</option>
+				<option value="./textfiles/TEXTPIC2/PIRATE2.TXT">PIRATE2.TXT</option>
+				<option value="./textfiles/TEXTPIC2/PITCHER.TXT">PITCHER.TXT</option>
+				<option value="./textfiles/TEXTPIC2/PLANET.TXT">PLANET.TXT</option>
+				<option value="./textfiles/TEXTPIC2/PLAYBOY.TXT">PLAYBOY.TXT</option>
+				<option value="./textfiles/TEXTPIC2/POPCORN.TXT">POPCORN.TXT</option>
+				<option value="./textfiles/TEXTPIC2/POWERLRD.TXT">POWERLRD.TXT</option>
+				<option value="./textfiles/TEXTPIC2/PTOHEAD.TXT">PTOHEAD.TXT</option>
+				<option value="./textfiles/TEXTPIC2/QMARK.TXT">QMARK.TXT</option>
+				<option value="./textfiles/TEXTPIC2/RADIO.TXT">RADIO.TXT</option>
+				<option value="./textfiles/TEXTPIC2/RAMCHIP.TXT">RAMCHIP.TXT</option>
+				<option value="./textfiles/TEXTPIC2/REAGAN.TXT">REAGAN.TXT</option>
+				<option value="./textfiles/TEXTPIC2/REDSKINS.TXT">REDSKINS.TXT</option>
+				<option value="./textfiles/TEXTPIC2/RELIANT.TXT">RELIANT.TXT</option>
+				<option value="./textfiles/TEXTPIC2/RETREAT.TXT">RETREAT.TXT</option>
+				<option value="./textfiles/TEXTPIC2/ROSE.TXT">ROSE.TXT</option>
+				<option value="./textfiles/TEXTPIC2/ROSE2.TXT">ROSE2.TXT</option>
+				<option value="./textfiles/TEXTPIC2/RUMBLE.TXT">RUMBLE.TXT</option>
+				<option value="./textfiles/TEXTPIC2/SABRES.TXT">SABRES.TXT</option>
+				<option value="./textfiles/TEXTPIC2/SAILBOAT.TXT">SAILBOAT.TXT</option>
+				<option value="./textfiles/TEXTPIC2/SATDISH.TXT">SATDISH.TXT</option>
+				<option value="./textfiles/TEXTPIC2/SCHRODER.TXT">SCHRODER.TXT</option>
+				<option value="./textfiles/TEXTPIC2/SCREAMER.TXT">SCREAMER.TXT</option>
+				<option value="./textfiles/TEXTPIC2/SHOOT.TXT">SHOOT.TXT</option>
+				<option value="./textfiles/TEXTPIC2/SHOPCART.TXT">SHOPCART.TXT</option>
+				<option value="./textfiles/TEXTPIC2/SKIER.TXT">SKIER.TXT</option>
+				<option value="./textfiles/TEXTPIC2/SKULL.TXT">SKULL.TXT</option>
+				<option value="./textfiles/TEXTPIC2/SKULLP.TXT">SKULLP.TXT</option>
+				<option value="./textfiles/TEXTPIC2/SKULLSWR.TXT">SKULLSWR.TXT</option>
+				<option value="./textfiles/TEXTPIC2/SKULWING.TXT">SKULWING.TXT</option>
+				<option value="./textfiles/TEXTPIC2/SMALL.TXT">SMALL.TXT</option>
+				<option value="./textfiles/TEXTPIC2/SMOKER.TXT">SMOKER.TXT</option>
+				<option value="./textfiles/TEXTPIC2/SMURF.TXT">SMURF.TXT</option>
+				<option value="./textfiles/TEXTPIC2/SPLUG.TXT">SPLUG.TXT</option>
+				<option value="./textfiles/TEXTPIC2/SPUDS.TXT">SPUDS.TXT</option>
+				<option value="./textfiles/TEXTPIC2/STAIRS.TXT">STAIRS.TXT</option>
+				<option value="./textfiles/TEXTPIC2/STARSHIP.TXT">STARSHIP.TXT</option>
+				<option value="./textfiles/TEXTPIC2/STAY.TXT">STAY.TXT</option>
+				<option value="./textfiles/TEXTPIC2/STEELWRK.TXT">STEELWRK.TXT</option>
+				<option value="./textfiles/TEXTPIC2/SUB.TXT">SUB.TXT</option>
+				<option value="./textfiles/TEXTPIC2/TAILS.TXT">TAILS.TXT</option>
+				<option value="./textfiles/TEXTPIC2/TEAPOT.TXT">TEAPOT.TXT</option>
+				<option value="./textfiles/TEXTPIC2/TRAIN.TXT">TRAIN.TXT</option>
+				<option value="./textfiles/TEXTPIC2/TRUCK.TXT">TRUCK.TXT</option>
+				<option value="./textfiles/TEXTPIC2/TRUCK1.TXT">TRUCK1.TXT</option>
+				<option value="./textfiles/TEXTPIC2/TUNNEL.TXT">TUNNEL.TXT</option>
+				<option value="./textfiles/TEXTPIC2/TURKEY.TXT">TURKEY.TXT</option>
+				<option value="./textfiles/TEXTPIC2/TURTLE.TXT">TURTLE.TXT</option>
+				<option value="./textfiles/TEXTPIC2/USEAGLE.TXT">USEAGLE.TXT</option>
+				<option value="./textfiles/TEXTPIC2/V.TXT">V.TXT</option>
+				<option value="./textfiles/TEXTPIC2/VOTEBOX.TXT">VOTEBOX.TXT</option>
+				<option value="./textfiles/TEXTPIC2/WARRIOR.TXT">WARRIOR.TXT</option>
+				<option value="./textfiles/TEXTPIC2/WHATEVER.TXT">WHATEVER.TXT</option>
+				<option value="./textfiles/TEXTPIC2/WITCH.TXT">WITCH.TXT</option>
+				<option value="./textfiles/TEXTPIC2/WIZARD.TXT">WIZARD.TXT</option>
+				<option value="./textfiles/TEXTPIC2/WIZATTIC.TXT">WIZATTIC.TXT</option>
+				<option value="./textfiles/TEXTPIC2/WREATH.TXT">WREATH.TXT</option>
+				<option value="./textfiles/TEXTPIC2/XMASTREE.TXT">XMASTREE.TXT</option>
+				<option value="./textfiles/TEXTPIC2/YELLOW.TXT">YELLOW.TXT</option>
+
+			</select>
+		</div><!-- end .control-row -->
+	</div><!-- end #controls -->
 
 	<div id="canvas-container">
 		<canvas id="atascii" class="container"></canvas>
