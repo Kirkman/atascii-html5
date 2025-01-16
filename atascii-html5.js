@@ -5,18 +5,19 @@ var context = canvas.getContext('2d');
 // 30 characters per second should emulate 300bps.
 var cps = 30;
 var chunks = 1;
-var delay = 1000/(cps/chunks);
+var delay = 1000 / (cps/chunks);
 var before;
 
 
 // shim layer with setTimeout fallback
-window.requestAnimFrame = (function(){
-  return  window.requestAnimationFrame       ||
-          window.webkitRequestAnimationFrame ||
-          window.mozRequestAnimationFrame    ||
-          function( callback ){
-            window.setTimeout(callback, delay);
-          };
+window.requestAnimFrame = (function() {
+	return
+			window.requestAnimationFrame       ||
+			window.webkitRequestAnimationFrame ||
+			window.mozRequestAnimationFrame    ||
+			function(callback) {
+				window.setTimeout(callback, delay);
+			};
 })();
 
 
@@ -68,14 +69,14 @@ document.getElementById('fileSelector').onchange = function() {
 	if (typeof screen === 'object') {
 		screen.stop();
 	}
-	loadFileFromUrl( value );
+	loadFileFromUrl(value);
 }
 
 document.getElementById('speed').onchange = function() {
 	var elem = (typeof this.selectedIndex === "undefined" ? window.event.srcElement : this);
 	var value = elem.value || elem.options[elem.selectedIndex].value;
 
-	switch ( parseInt(value) ) {
+	switch (parseInt(value)) {
 		default:
 			cps = 30;
 			chunks = 1;
@@ -107,7 +108,7 @@ document.getElementById('speed').onchange = function() {
 	}
 	delay = 1000/(cps/chunks);
 
-	//console.log('speed:\t' + value + 'cps:\t' + cps + 'chunks:\t' + chunks + 'delay:\t' + delay);
+	// console.log('speed:\t' + value + 'cps:\t' + cps + 'chunks:\t' + chunks + 'delay:\t' + delay);
 
 }
 
@@ -119,7 +120,7 @@ document.getElementById('diagnostic').onclick = function() {
 
 	var diags = document.getElementsByClassName("diagnostic");
 	for (var i=0; i < diags.length; i++) {
-		if ( diagnosticMode ) {
+		if (diagnosticMode) {
 			diags.item(i).style.display = 'block';
 		}
 		else {
@@ -133,38 +134,38 @@ document.getElementById('full-screen').onclick = function() {
 	else { fullScreenMode = false; }
 
 	var container = document.getElementById('canvas-container');
-	if ( fullScreenMode ) {
+	if (fullScreenMode) {
 		resize(container);
 		container.classList.add('fullscreen');
-		if ( container.webkitRequestFullscreen ) {
+		if (container.webkitRequestFullscreen) {
 			container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
 			document.addEventListener('webkitfullscreenchange', exitHandler, false);
 		}
-		else if ( container.mozRequestFullScreen ) {
+		else if (container.mozRequestFullScreen) {
 			container.mozRequestFullScreen();
 			document.addEventListener('mozfullscreenchange', exitHandler, false);
 		}
-		else if ( container.msRequestFullscreen ) {
+		else if (container.msRequestFullscreen) {
 			container.msRequestFullscreen();
 			document.addEventListener('MSFullscreenChange', exitHandler, false);
 		}
-		else if ( container.requestFullscreen ) {
+		else if (container.requestFullscreen) {
 			container.requestFullscreen();
 			document.addEventListener('fullscreenchange', exitHandler, false);
 		}
 	}
 	else {
 
-		if ( document.webkitExitFullscreen ) {
+		if (document.webkitExitFullscreen) {
 			document.webkitExitFullscreen();
 		}
-		else if ( document.mozCancelFullScreen ) {
+		else if (document.mozCancelFullScreen) {
 			document.mozCancelFullScreen();
 		}
-		else if ( document.msExitFullscreen ) {
+		else if (document.msExitFullscreen) {
 			document.msExitFullscreen();
 		}
-		else if ( document.exitFullscreen ) {
+		else if (document.exitFullscreen) {
 			document.exitFullscreen();
 		}
 		container.setAttribute('style', '-ms-transform: scale(1,1); -webkit-transform: scale3d(1,1,1); -moz-transform: scale(1,1); -o-transform: scale(1,1); transform: scale(1,1);');
@@ -175,7 +176,7 @@ document.getElementById('full-screen').onclick = function() {
 function exitHandler() {
 	var state = document.webkitIsFullScreen || document.mozFullScreen || document.msFullscreenElement;
 	var container = document.getElementById('canvas-container');
-	if ( !state ) {
+	if (!state) {
 		container.setAttribute('style', '-ms-transform-origin: left top; -webkit-transform-origin: left top; -moz-transform-origin: left top; -o-transform-origin: left top; transform-origin: left top; -ms-transform: scale(1,1); -webkit-transform: scale3d(1,1,1); -moz-transform: scale(1,1); -o-transform: scale(1,1); transform: scale(1,1);');
 		container.classList.remove('fullscreen');
 		document.getElementById('full-screen').checked = false;
@@ -185,7 +186,7 @@ function exitHandler() {
 
 document.onkeydown = function(e) {
 	// P: "Print screen" (create IMG element for saving screen caps)_
-	if ( e.keyCode == 80 ) {
+	if (e.keyCode == 80) {
 		if (typeof screen === 'object') {
 			var imgUrl = canvas.toDataURL("image/png");
 			var img = document.getElementById('capture');
@@ -194,7 +195,7 @@ document.onkeydown = function(e) {
 	}
 
 	// C: "Capture animation" (begin saving frames to make an animated GIF)
-	if ( e.keyCode == 67 ) {
+	if (e.keyCode == 67) {
 		if (typeof screen === 'object') {
 			if (screen.isCapturing) {
 				screen.stopCapture();
@@ -206,7 +207,7 @@ document.onkeydown = function(e) {
 	}
 
 	// ESC: stop
-	else if ( e.keyCode == 27 ) {
+	else if (e.keyCode == 27) {
 		if (typeof screen === 'object') {
 			screen.stop();
 		}
@@ -214,15 +215,15 @@ document.onkeydown = function(e) {
 
 	if (diagnosticMode) {
 		// LEFT: step backward one frame using diagnostic
-		if ( e.keyCode == 37 ) {
+		if (e.keyCode == 37) {
 			if (typeof screen === 'object') {
-				diagnosticRender( -1 );
+				diagnosticRender(-1);
 			}
 		}
 		// RIGHT: step forward one frame using diagnostic
-		else if ( e.keyCode == 39 ) {
+		else if (e.keyCode == 39) {
 			if (typeof screen === 'object') {
-				diagnosticRender( 1 );
+				diagnosticRender(1);
 			}
 		}
 	}
@@ -245,7 +246,7 @@ function resize(element) {
 
 
 // Function is called when server-side dropdown onChange
-function loadFileFromUrl( url ) {
+function loadFileFromUrl(url) {
 	var oReq = new XMLHttpRequest();
 	oReq.onload = function(e) {
 		// Stop any animations that are playing now.
@@ -255,13 +256,13 @@ function loadFileFromUrl( url ) {
 		// convert result ArrayBuffer to Uint8Array
 		var byteArray = new Uint8Array(result);
 		// Change Uint8Array to normal array, clone it, store it in Stream obj
-		stream = new Stream( [].slice.call(byteArray) );
+		stream = new Stream([].slice.call(byteArray));
 		// reset globals
 		var cursor = {'x':0,'y':0};
 		screen.initialize();
 		screen.draw();
 		// Send array to our renderer
-		requestAnimFrame( render );
+		requestAnimFrame(render);
 	}
 	oReq.open("GET", url);
 	oReq.setRequestHeader('Content-Type', 'application/octet-stream');
@@ -271,12 +272,12 @@ function loadFileFromUrl( url ) {
 
 
 
-function canvasToIndexedPixels( ctx, width, height, palette ) {
+function canvasToIndexedPixels(ctx, width, height, palette) {
 	// var t0 = performance.now();
 
 	// Iterating over a Uint32Array instead of the raw ImageData avoids
 	// needing to pull out the RGB values separately, or increment the index while iterating.
-	// Also avoids having to join the values or cast them to strings. 
+	// Also avoids having to join the values or cast them to strings.
 	// All in all, HUGE performance boost in finding the index for each pixel.
 
 	var pixels_raw = ctx.getImageData(0, 0, width, height).data;
@@ -286,10 +287,10 @@ function canvasToIndexedPixels( ctx, width, height, palette ) {
 	var l = pixels_buf32.length;
 	for (var i = 0; i < l; i++) {
 		var color = pixels_buf32[i];
-		// Get the palette index for this color. If the color isn't found (transparent pixel, etc), 
+		// Get the palette index for this color. If the color isn't found (transparent pixel, etc),
 		// we'll use math.Abs() to change -1 to +1, which is the index of the background blue color.
-		var color_index = Math.abs( palette.indexOf(color) );
-		indexed_pixels.push( color_index );
+		var color_index = Math.abs(palette.indexOf(color));
+		indexed_pixels.push(color_index);
 	}
 	// var t1 = performance.now();
 	// console.log("Indexing this frame took " + (t1 - t0) + " milliseconds.")
@@ -298,8 +299,8 @@ function canvasToIndexedPixels( ctx, width, height, palette ) {
 }
 
 
-// Function is called when file selector fires onChange 
-function parseFile( files ) {
+// Function is called when file selector fires onChange
+function parseFile(files) {
 	var numFiles = files.length;
 	for (var i = 0, numFiles = files.length; i < numFiles; i++) {
 		var file = files[i];
@@ -315,13 +316,13 @@ function parseFile( files ) {
 		for (var i=0; i<result.length; i++) {
 			result[i] = result[i].charCodeAt(0);
 		}
-		stream = new Stream( result );
+		stream = new Stream(result);
 		// reset globals
 		var cursor = {'x':0,'y':0};
 		screen.initialize();
 		screen.draw();
 		// Send array to our renderer
-		requestAnimFrame( render );
+		requestAnimFrame(render);
 	};
 	reader.readAsBinaryString(file);
 }
@@ -374,7 +375,7 @@ Screen.prototype = {
 		this.isPlaying = false;
 	},
 	clearScreen: function() {
-		context.clearRect(0,0,this.canvasWidth,this.canvasHeight);
+		context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 		for (var y=0; y<this.height; y++) {
 			this.data[y] = [];
 			for (var x=0; x<this.width; x++) {
@@ -387,7 +388,7 @@ Screen.prototype = {
 	},
 	initialize: function() {
 		this.clearScreen();
-		if ( this.prevData.length == 0 ) {
+		if (this.prevData.length == 0) {
 			// Make a copy of the screen data
 			this.prevData = this.data.map(function(arr) {
 				return arr.slice();
@@ -403,97 +404,97 @@ Screen.prototype = {
 			}
 		}
 	},
-	getData: function(x,y) {
+	getData: function(x, y) {
 		return this.data[y][x]
 	},
-	setData: function(x,y,data) {
-		if ( typeof this.data[y] === 'undefined' || typeof this.data[y][x] === 'undefined' ) {
+	setData: function(x, y, data) {
+		if (typeof this.data[y] === 'undefined' || typeof this.data[y][x] === 'undefined') {
 			throw("ERROR: Screen.setData() invalid coordinates: " + x + "," + y);
 		}
 		this.data[y][x] = data;
 	},
-	scrollUp: function( amt ) {
-		// Iterate over each line and replace it with 
+	scrollUp: function(amt) {
+		// Iterate over each line and replace it with
 		// the data from the next line
 		for (var y=0; y < this.height; y++) {
-			for (var x=0; x < this.width; x++ ) {
+			for (var x=0; x < this.width; x++) {
 				// Check if we're within threshold amt
-				if ( y < ( this.height - amt) ) {
-					var theChar = this.getData( x, y + amt );
-					this.setData( x, y, theChar );
+				if (y < (this.height - amt)) {
+					var theChar = this.getData(x, y + amt);
+					this.setData(x, y, theChar);
 				}
 				// If not, then this is the bottom. Fill with empty space.
 				else {
-					this.setData( x, y, 32 );
+					this.setData(x, y, 32);
 				}
 			}
 		}
 		this.draw();
 	},
-	shiftUp: function( y, amt ) {
-		// Iterate over each line and replace it with 
+	shiftUp: function(y, amt) {
+		// Iterate over each line and replace it with
 		// the data from the next line
-		for ( y; y < this.height; y++) {
-			for (var x=0; x < this.width; x++ ) {
+		for (y; y < this.height; y++) {
+			for (var x=0; x < this.width; x++) {
 				// Check if we're within threshold amt
-				if ( y < ( this.height - amt) ) {
-					var theChar = this.getData( x, y + amt );
-					this.setData( x, y, theChar );
+				if (y < (this.height - amt)) {
+					var theChar = this.getData(x, y + amt);
+					this.setData(x, y, theChar);
 				}
 				// If not, then this is the bottom. Fill with empty space.
 				else {
-					this.setData( x, y, 32 );
+					this.setData(x, y, 32);
 				}
 			}
 		}
 		this.draw();
 	},
-	shiftDown: function( y, amt ) {
+	shiftDown: function(y, amt) {
 		var z = this.height - 1;
-		// Iterate over each line and replace it with 
+		// Iterate over each line and replace it with
 		// the data from the next line
-		for ( y; z > y; z--) {
-			for (var x=0; x < this.width; x++ ) {
-				var theChar = this.getData( x, z - amt );
-				this.setData( x, z, theChar );
+		for (y; z > y; z--) {
+			for (var x=0; x < this.width; x++) {
+				var theChar = this.getData(x, z - amt);
+				this.setData(x, z, theChar);
 			}
 		}
 		this.draw();
 	},
-	shiftLeft: function( x, y, amt ) {
-		for ( x; x < this.width; x++ ) {
+	shiftLeft: function(x, y, amt) {
+		for (x; x < this.width; x++) {
 			// Check if we're within threshold amt
-			if ( x < ( this.width - amt) ) {
-				var theChar = this.getData( x + amt, y );
-				this.setData( x, y, theChar );
+			if (x < (this.width - amt)) {
+				var theChar = this.getData(x + amt, y);
+				this.setData(x, y, theChar);
 			}
 			// If not, then this is end of line. Fill with empty space.
 			else {
-				this.setData( x, y, 32 );
+				this.setData(x, y, 32);
 			}
 		}
 		this.draw();
 	},
-	shiftRight: function( x, y, amt ) {
+	shiftRight: function(x, y, amt) {
 		var z = this.width - 1;
-		for ( x; z > x; z-- ) {
-			var theChar = this.getData( z - amt, y );
-			this.setData( z, y, theChar );
+		for (x; z > x; z--) {
+			var theChar = this.getData(z - amt, y);
+			this.setData(z, y, theChar);
 		}
-		this.setData( x, y, 32 );
+		this.setData(x, y, 32);
 		this.draw();
 	},
-	clearLine: function( y ) {
+	clearLine: function(y) {
 		for (var x=0; x<this.width; x++) {
-			this.setData( x, y, 32 );
+			this.setData(x, y, 32);
 		}
 		this.draw();
 	},
-	isLineBlank: function( y ) {
+	isLineBlank: function(y) {
 		var lineBlank = true;
 		// Iterate over all columns, looking for any character other than space
 		for (var x=0; x<this.width; x++) {
-			if ( this.getData( x, y ) != 32 ) {
+			if (this.getData(x, y) != 32) {
 				lineBlank = false;
 			}
 		}
@@ -501,14 +502,14 @@ Screen.prototype = {
 	},
 
 	draw: function() {
-		//context.clearRect(x,y,this.width,this.height);
+		//context.clearRect(x, y, this.width, this.height);
 		for (var y=0; y<this.height; y++) {
 			for (var x=0; x<this.width; x++) {
 				// If we're in diagnostic mode, repaint everything.
 				// Otherwise, only repaint if character changed from last paint
-				if ( this.data[y][x] && this.prevData[y][x] ) {
-					if ( this.data[y][x] != this.prevData[y][x] || diagnosticMode ) {
-						this.sprite.draw( this.data[y][x], x*this.spriteWidth, y*this.spriteHeight );
+				if (this.data[y][x] && this.prevData[y][x]) {
+					if (this.data[y][x] != this.prevData[y][x] || diagnosticMode) {
+						this.sprite.draw(this.data[y][x], x*this.spriteWidth, y*this.spriteHeight);
 					}
 				}
 			}
@@ -518,11 +519,11 @@ Screen.prototype = {
 			return arr.slice();
 		});
 	},
-	drawCursor: function(x,y) {
+	drawCursor: function(x, y) {
 		thisX = x*this.spriteWidth;
 		thisY = y*this.spriteHeight;
 		context.fillStyle = 'rgba(225,225,0,0.5)';
-		context.fillRect(thisX,thisY,this.spriteWidth,this.spriteHeight);
+		context.fillRect(thisX, thisY, this.spriteWidth, this.spriteHeight);
 	},
 	log: function() {
 		var str = '';
@@ -548,15 +549,15 @@ Screen.prototype = {
 		// 245760 = 0003C000 (I presume this is a transparent pixel)
 
 		this.paletteUInt32 = [
-			4292785789, 
+			4292785789,
 			4287520000
 		];
 
 		// Initialize omggif's GifWriter
 		this.gif = new GifWriter(
-			this.buf, 
-			this.canvasWidth, 
-			this.canvasHeight, 
+			this.buf,
+			this.canvasWidth,
+			this.canvasHeight,
 			{
 				loop: 1
 			}
@@ -594,7 +595,7 @@ Sprite.prototype = {
 			0,
 			this.width,
 			this.height,
-			x, 
+			x,
 			y,
 			this.width,
 			this.height
@@ -602,48 +603,49 @@ Sprite.prototype = {
 	}
 };
 
-function diagnosticRender( direction ) {
-	stream.increment( direction );
+function diagnosticRender(direction) {
+	stream.increment(direction);
 
 	// call the draw routine
-	drawChar( stream.getData() );
+	drawChar(stream.getData());
 }
 
-function render( now ) {
+function render(now) {
 	// call the draw routine
-	if ( !before ) {
+	if (!before) {
 		before = now;
 	}
 	var delta = now - before;
 
 	// if sufficient time passed since last draw, draw next char
-	if ( delta > delay ) {
-		//console.log('NOW: ' + now + ' | BEFORE: ' + before + ' | ELAPSED: ' + (now-before) );
+	if (delta > delay) {
+		//console.log('NOW: ' + now + ' | BEFORE: ' + before + ' | ELAPSED: ' + (now-before));
 		for (var i=0; i<chunks; i++) {
-			if ( stream.getIndex() < stream.getLength() ) {
-				drawChar( stream.getData() );
+			if (stream.getIndex() < stream.getLength()) {
+				drawChar(stream.getData());
 				stream.increment(1);
 			}
 		}
- 		//before = now - (delta % delay);
+
  		before = now;
+
 		// If we are capturing, send this frame to the GIF renderer
 		if (screen.isCapturing) {
 			// or copy the pixels from a canvas context
-			var frame = canvasToIndexedPixels( 
-				context, 
-				screen.canvasWidth, 
-				screen.canvasHeight, 
-				screen.paletteUInt32 
+			var frame = canvasToIndexedPixels(
+				context,
+				screen.canvasWidth,
+				screen.canvasHeight,
+				screen.paletteUInt32
 			);
 			screen.gif.addFrame(
-				0, 
-				0, 
-				screen.canvasWidth, 
-				screen.canvasHeight, 
-				frame, 
+				0,
+				0,
+				screen.canvasWidth,
+				screen.canvasHeight,
+				frame,
 				{
-					palette: screen.palette, 
+					palette: screen.palette,
 					delay: delay/10 // omggif uses centiseconds rather than milliseconds. Annoying.
 				}
 			);
@@ -652,12 +654,12 @@ function render( now ) {
 
 	// If stream hasn't run out, and nobody has pushed Stop,
 	// then continue requesting animation
-	if ( ( stream.getIndex() < stream.getLength() ) && screen.isPlaying) {
-		requestAnimFrame( render );
+	if ((stream.getIndex() < stream.getLength()) && screen.isPlaying) {
+		requestAnimFrame(render);
 	}
 }
 
-function drawChar( charCode ) {
+function drawChar(charCode) {
 	var msg = '';
 	if (charCode == 20) { msg = '●'; }
 	if (charCode == 27) { msg = '[esc]'; }
@@ -677,19 +679,19 @@ function drawChar( charCode ) {
 	if (charCode == 254) { msg = '[delete char]'; }
 	if (charCode == 255) { msg = '[insert char]'; }
 	msg = ' ' + msg;
-	if ( diagnosticMode ) {
-		console.log('i:'+stream.getIndex(),'\tx:'+cursor.x,'\ty:'+cursor.y,'\tcode:'+charCode + msg);
+	if (diagnosticMode) {
+		console.log('i:'+stream.getIndex(), '\tx:'+cursor.x, '\ty:'+cursor.y, '\tcode:'+charCode + msg);
 	}
 
 
 	// Parse the ASCII codes
 
 	// Cursor movement
-	if ( 
-		( charCode >= 28 && charCode <= 31 ) ||
-		( charCode >= 125 && charCode <= 127 ) ||
-		( charCode >= 155 && charCode <= 159 ) ||
-		( charCode >= 253 && charCode <= 255 ) 
+	if (
+		(charCode >= 28 && charCode <= 31) ||
+		(charCode >= 125 && charCode <= 127) ||
+		(charCode >= 155 && charCode <= 159) ||
+		(charCode >= 253 && charCode <= 255)
 	) {
 		// Move up
 		if (charCode == 28) {
@@ -742,7 +744,7 @@ function drawChar( charCode ) {
 				// move cursor back one
 				cursor.x -= 1;
 				// erase character at this point
-				screen.setData( cursor.x, cursor.y, 32 );
+				screen.setData(cursor.x, cursor.y, 32);
 				screen.draw();
 			}
 			// If we're on the first column, then we need to go back to
@@ -751,21 +753,21 @@ function drawChar( charCode ) {
 			// need to shift the screen up and erase the blank line before
 			// moving the cursor and doing what I just described.
 			else {
-				if ( screen.isLineBlank( cursor.y ) ) {
+				if (screen.isLineBlank(cursor.y)) {
 					// Clear this line
-					screen.clearLine( cursor.y );
-					// Shift all rows (below this point) up 1 line 
-					screen.shiftUp( cursor.y, 1);
+					screen.clearLine(cursor.y);
+					// Shift all rows (below this point) up 1 line
+					screen.shiftUp(cursor.y, 1);
 				}
 				// move cursor to end of previous line
 				cursor.x = screen.width - 1;
 				cursor.y -= 1;
 				// erase character at this point
-				screen.setData( cursor.x, cursor.y, 32 );
+				screen.setData(cursor.x, cursor.y, 32);
 				screen.draw();
 			}
 		}
-		// Tab 
+		// Tab
 		// Default value of 8?
 		// Looks like tab always moves to a tab stop, not a set # of characters.
 		else if (charCode == 127) {
@@ -791,7 +793,7 @@ function drawChar( charCode ) {
 				cursor.x = 0;
 				// If we're anywhere but the bottom,
 				// simply move to the next row
-				if ( cursor.y < screen.height - 1) {
+				if (cursor.y < screen.height - 1) {
 					cursor.y++;
 				}
 				// If we're at the bottom of the screen,
@@ -810,7 +812,7 @@ function drawChar( charCode ) {
 			cursor.x = 0;
 			// If we're anywhere but the bottom,
 			// simply move to the next row
-			if ( cursor.y < screen.height - 1) {
+			if (cursor.y < screen.height - 1) {
 				cursor.y++;
 			}
 			// If we're at the bottom of the screen,
@@ -820,26 +822,26 @@ function drawChar( charCode ) {
 			}
 		}
 		// Delete Line
-		// Seems like this command might actually delete up to 
+		// Seems like this command might actually delete up to
 		// three consecutive lines on screen, if user has typed
 		// without hitting 'return'
 		else if (charCode == 156) {
 			// Clear this line
-			screen.clearLine( cursor.y );
+			screen.clearLine(cursor.y);
 			// Move to beginning of line
 			cursor.x = 0;
-			// Shift all rows (below this point) up 1 line 
-			screen.shiftUp( cursor.y, 1);
+			// Shift all rows (below this point) up 1 line
+			screen.shiftUp(cursor.y, 1);
 			// Need to add complexity to handle consecutive lines
 		}
 		// Insert Line
 		else if (charCode == 157) {
 			// Move cursor to beginning of line
 			cursor.x = 0;
-			// Shift all rows (below this point) down 1 line 
-			screen.shiftDown( cursor.y, 1);
+			// Shift all rows (below this point) down 1 line
+			screen.shiftDown(cursor.y, 1);
 			// Clear original line
-			screen.clearLine( cursor.y );
+			screen.clearLine(cursor.y);
 			// Need to add complexity to handle consecutive lines
 		}
 		// Buzzer
@@ -851,14 +853,14 @@ function drawChar( charCode ) {
 		// This command is also multi-line aware.
 		else if (charCode == 254) {
 			// Shift everything after cursor one char to the left
-			screen.shiftLeft( cursor.x, cursor.y, 1);
+			screen.shiftLeft(cursor.x, cursor.y, 1);
 			// Need to add complexity to handle consecutive lines
 		}
 		// Insert character
 		// This command is also multi-line aware.
 		else if (charCode == 255) {
 			// Shift everything after cursor one char to the right
-			screen.shiftRight( cursor.x, cursor.y, 1);
+			screen.shiftRight(cursor.x, cursor.y, 1);
 			// Need to add complexity to handle consecutive lines
 		}
 	}
@@ -868,7 +870,7 @@ function drawChar( charCode ) {
 		// ATASCII uses escape to indicate that the next byte
 		// is a character to be rendered, not a command to execute.
 		// So simply increment the index and continue rendering.
-		if ( charCode == 27) {
+		if (charCode == 27) {
 			stream.increment(1);
 			charCode = stream.getData();
 		}
@@ -876,24 +878,24 @@ function drawChar( charCode ) {
 		screen.draw();
 		// If we're on the last column, typing a character is like an EOL.
 		// The character gets placed, but everything underneath gets shifted
-		// down one line. 
-		if ( cursor.x == cols-1 ) {
+		// down one line.
+		if (cursor.x == cols-1) {
 			// Move cursor to beginning of line
 			cursor.x = 0;
 			// Move cursor down 1 line
 			cursor.y++;
-			// Shift all rows (below this point) down 1 line 
-			screen.shiftDown( cursor.y, 1);
+			// Shift all rows (below this point) down 1 line
+			screen.shiftDown(cursor.y, 1);
 			// Clear original row
-			screen.clearLine( cursor.y );
+			screen.clearLine(cursor.y);
 		}
 		else {
 			cursor.x++;
 		}
 	}
 	
-	if ( diagnosticMode ) {
-		screen.drawCursor(cursor.x,cursor.y);
+	if (diagnosticMode) {
+		screen.drawCursor(cursor.x, cursor.y);
 	}
 
 }
