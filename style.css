@@ -11,25 +11,45 @@ body {
 	margin: 0px;
 	padding: 0px;
 	background-color: #0e0e11;
-	color: #7db6de;
+	color: #005d8e;
 	text-align: center;
 }
+h1, h2, h3, dt {
+	color: #7db6de;
+}
+
 h1 {
-	font-size: 36px;
-	padding: 0px 15px;
+	font-size: 3rem;
+	padding: 0 1rem;
+}
+h1 {
+	font-size: 1.25rem;
+	padding: 0 1rem;
 }
 h3 {
-	font-size: 18px;
-	padding: 0px 15px;
+	font-size: 1.25rem;
+	padding: 0 1rem;
 }
-p,li {
-	font-size: 14px;
-	padding: 0px 15px;
-	color: #005d8e;
+p, li, dt, dd {
+	font-size: 0.875rem;
+	padding: 0 1rem;
+	line-height: 1.33333;
 }
-li {
-	margin-bottom: 12px;
+
+li, dd {
+	margin-bottom: 0.75rem;
 }
+
+dd span { color: #444; }
+
+
+a { padding: 0.125rem 0.5rem; text-decoration: none; }
+a:link { background-color: #005d8e; color: black; }
+a:visited { background-color: #005d8e; color: black; }
+a:hover { background-color: #7db6de; color: black; }
+a:active { background-color: #005d8e; color: black; }
+
+
 
 #fileSelector {
 	display: none;
@@ -38,9 +58,22 @@ li {
 section {
 	margin: 0px auto;
 }
+
 section#background-info {
 	text-align: left;
 	width: 80%;
+}
+
+#commands {
+	width: 80%;
+	text-align: left;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#commands ul {
+	list-style: none;
+	padding-left: 0px;
 }
 
 #controls {
@@ -131,4 +164,10 @@ section#background-info {
 }
 .diagnostic {
 	display: none;
+}
+
+
+@media screen and (max-width: 640px) {
+	h1 { font-size: 2rem; }
+	h2 { font-size: 1rem; }
 }
