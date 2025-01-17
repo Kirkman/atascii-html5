@@ -11,8 +11,7 @@ var before;
 
 // shim layer with setTimeout fallback
 window.requestAnimFrame = (function() {
-	return
-			window.requestAnimationFrame       ||
+	return	window.requestAnimationFrame       ||
 			window.webkitRequestAnimationFrame ||
 			window.mozRequestAnimationFrame    ||
 			function(callback) {
@@ -52,6 +51,13 @@ var cursor = {'x':0,'y':0};
 var img = new Image();
 // If you don't wait for onload, then nothing happens.
 img.onload = function () {
+	// Make sure select lists go back to default values
+	const speed_sel = document.querySelector('#speed');
+	if (speed_sel.value != '300') { speed_sel.value = '300'; }
+	const file_sel = document.querySelector('#fileSelector');
+	if (file_sel.value != '') { file_sel.value = ''; }
+
+
 	var atasciiFont = new Sprite(img, 16, 16);
 	screen = new Screen(cols, rows, atasciiFont);
 	screen.initialize();
@@ -63,6 +69,10 @@ img.src = 'fontsets/atari-8bit-blue.png';
 
 
 document.getElementById('fileSelector').onchange = function() {
+	// Remove focus from this select so that people can use keyboard commands
+	// and not accidentally select a different animation from the list.
+	this.blur();
+
 	var elem = (typeof this.selectedIndex === "undefined" ? window.event.srcElement : this);
 	var value = elem.value || elem.options[elem.selectedIndex].value;
 	// Stop any running animations
@@ -73,6 +83,10 @@ document.getElementById('fileSelector').onchange = function() {
 }
 
 document.getElementById('speed').onchange = function() {
+	// Remove focus from this select so that people can use keyboard commands
+	// and not accidentally select a different animation from the list.
+	this.blur();
+
 	var elem = (typeof this.selectedIndex === "undefined" ? window.event.srcElement : this);
 	var value = elem.value || elem.options[elem.selectedIndex].value;
 

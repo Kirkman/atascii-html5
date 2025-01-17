@@ -22,7 +22,7 @@ h1 {
 	font-size: 3rem;
 	padding: 0 1rem;
 }
-h1 {
+h2 {
 	font-size: 1.25rem;
 	padding: 0 1rem;
 }
@@ -169,5 +169,10 @@ section#background-info {
 
 @media screen and (max-width: 640px) {
 	h1 { font-size: 2rem; }
-	h2 { font-size: 1rem; }
+	h2, h3 { font-size: 1rem; }
+	#canvas-container {
+		width: 480px;
+		height: 288px;
+	}
+
 }
